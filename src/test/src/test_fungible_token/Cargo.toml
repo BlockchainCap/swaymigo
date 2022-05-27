@@ -1,5 +1,5 @@
 [project]
-name = "tests"
+name = "test_fungible_token"
 version = "0.1.0"
 authors = ["Ryan Sproule"]
 edition = "2021"
