@@ -1,0 +1,1 @@
+library wrapped_asset;
