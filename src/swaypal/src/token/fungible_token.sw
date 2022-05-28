@@ -18,9 +18,9 @@ struct Mint {
     amount: u64,
 }
 
-// struct Burn {
-//     amount: u64,
-// }
+struct Burn {
+    amount: u64,
+}
 
 struct Transfer {
     from: Address,
@@ -37,16 +37,17 @@ pub fn mint_tokens(mint_amount: u64, to: Address) {
     });
 }
 
-// pub fn burn_tokens(burn_amount: u64, from: Address) {
-//     if burn_amount > storage.unowned {
-//         revert(0);
-//     }
-//     storage.supply = storage.supply - burn_amount;
-//     storage.unowned = storage.unowned - burn_amount;
-//     log(Burn {
-//         amount: burn_amount
-//     });
-// }
+// not really sure if we need burn and if it should actually have a 'from'
+pub fn burn_tokens(burn_amount: u64, from: Address) {
+    if burn_amount > storage.unowned {
+        revert(0);
+    }
+    storage.supply = storage.supply - burn_amount;
+    storage.unowned = storage.unowned - burn_amount;
+    log(Burn {
+        amount: burn_amount
+    });
+}
 
 pub fn transfer(from: Address, to: Address, amount: u64) {
     if get_balance(from) >= amount {

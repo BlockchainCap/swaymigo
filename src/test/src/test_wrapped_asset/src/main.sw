@@ -1,24 +1,17 @@
 contract;
 use swaypal::wrapped_asset::*;
 
-abi Token {
-    fn test_function() -> bool;
-    fn wrap();
-    fn unwrap();
+abi WrappedToken {
+    fn wrap_asset();
+    fn unwrap_asset();
 }
 
-impl Token for WrappedAsset {
-    fn wrap() {
-
+impl WrappedToken for Contract {
+    fn wrap_asset() {
+        wrap();
     }
 
-    fn unwrap() {
-
-    }
-}
-
-impl Token for Contract {
-    fn test_function() -> bool {
-        true
+    fn unwrap_asset() {
+        wnwrap();
     }
 }

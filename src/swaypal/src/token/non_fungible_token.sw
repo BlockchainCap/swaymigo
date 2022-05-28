@@ -1,4 +1,4 @@
-library erc721;
+library non_fungible_token;
 
 // struct ERC721 {
 //     balance: 
