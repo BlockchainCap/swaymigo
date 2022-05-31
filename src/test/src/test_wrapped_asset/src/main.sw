@@ -11,7 +11,7 @@ impl WrappedToken for Contract {
         wrap();
     }
 
-    fn unwrap_asset() {
-        wnwrap();
+    fn unwrap_asset(amount: u64) {
+        wnwrap(amount);
     }
 }
