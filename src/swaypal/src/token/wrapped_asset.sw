@@ -11,7 +11,7 @@ pub fn init(asset_id: b256) {
     storage.asset_id = asset_id;
 }
 
-pub fn wrap() { // make sure the coins being sent here match the asset ID let asset_id = msg_asset_id();
+pub fn wrap() { 
     assert(msg_asset_id() == storage.asset_id);
     assert(msg_amount() > 0);
     let owner = get_coins_owner();
