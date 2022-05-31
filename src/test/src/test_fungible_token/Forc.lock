@@ -4,16 +4,16 @@ dependencies = []
 
 [[package]]
 name = 'std'
-source = 'git+https://github.com/fuellabs/sway?tag=v0.14.2#6fc5c69f29a5aab0b6ca677d9384d0d5eaffb232'
+source = 'git+https://github.com/fuellabs/sway?tag=v0.14.4#b067a7dd64b26bd763eca268fef3849c2c77028d'
 dependencies = ['core']
 
 [[package]]
 name = 'swaypal'
-dependencies = ['std git+https://github.com/fuellabs/sway?tag=v0.14.2#6fc5c69f29a5aab0b6ca677d9384d0d5eaffb232']
+dependencies = ['std git+https://github.com/fuellabs/sway?tag=v0.14.4#b067a7dd64b26bd763eca268fef3849c2c77028d']
 
 [[package]]
 name = 'test_fungible_token'
 dependencies = [
-    'std git+https://github.com/fuellabs/sway?tag=v0.14.2#6fc5c69f29a5aab0b6ca677d9384d0d5eaffb232',
+    'std git+https://github.com/fuellabs/sway?tag=v0.14.4#b067a7dd64b26bd763eca268fef3849c2c77028d',
     'swaypal',
 ]

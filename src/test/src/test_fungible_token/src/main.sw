@@ -5,7 +5,7 @@ use std::address::Address;
 abi TestToken {
     fn mint(amount: u64, to: Address);
     fn burn(amount: u64, from: Address);
-    fn transferTokens(from: Address, to: Address, amount: u64);
+    fn transfer_tokens(from: Address, to: Address, amount: u64);
     fn balance_of(owner: Address) -> u64;
 }
 
@@ -18,7 +18,7 @@ impl TestToken for Contract {
         burn_tokens(amount, from);
     }
 
-    fn transferTokens(from: Address, to: Address, amount: u64) {
+    fn transfer_tokens(from: Address, to: Address, amount: u64) {
         transfer(from, to, amount)
     }
 

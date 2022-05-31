@@ -1,17 +1,10 @@
 library fungible_token;
-use std::{
-    address::Address,
-    storage::*,
-    logging::*,
-    revert::*,
-    hash::*
-};
+use std::{address::Address, hash::*, logging::*, revert::*, storage::*};
 
 const BALANCES_MAPPING = 0x0000000000000000000000000000000000000000000000000000000000000001;
 
 storage {
     supply: u64,
-    unowned: u64,
 }
 
 struct Mint {
@@ -28,10 +21,9 @@ struct Transfer {
     amount: u64,
 }
 
-// Do this in a seperate module 
+// Do this in a seperate module
 pub fn mint_tokens(mint_amount: u64, to: Address) {
     storage.supply = storage.supply + mint_amount;
-    storage.unowned = storage.unowned + mint_amount;
     log(Mint {
         amount: mint_amount
     });
@@ -39,11 +31,7 @@ pub fn mint_tokens(mint_amount: u64, to: Address) {
 
 // not really sure if we need burn and if it should actually have a 'from'
 pub fn burn_tokens(burn_amount: u64, from: Address) {
-    if burn_amount > storage.unowned {
-        revert(0);
-    }
     storage.supply = storage.supply - burn_amount;
-    storage.unowned = storage.unowned - burn_amount;
     log(Burn {
         amount: burn_amount
     });
