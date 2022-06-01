@@ -1,0 +1,6 @@
+*/*/target/
+**/*/json_abi_output.json
+target
+
+out
+**/*.rs.bk

@@ -1,16 +1,17 @@
-[project]
-name = "test_merkle_proof"
-version = "0.1.0"
-authors = ["Ryan Sproule"]
+[package]
+name = "test"
+version = "0.0.0"
+authors = ["Ryan Sproule <ryan@blockchain.capital>"]
 edition = "2021"
-license = "Apache-2.0"
+publish = false
 
 [dependencies]
 fuels = "0.14"
 fuels-abigen-macro = "0.14"
 tokio = { version = "1.12", features = ["rt", "macros"] }
 
+
 [[test]]
 harness = true
 name = "integration_tests"
-path = "tests/harness.rs"
+path = "harness.rs"

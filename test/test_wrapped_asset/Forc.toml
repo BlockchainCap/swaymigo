@@ -1,7 +1,8 @@
 [project]
-name = "test_merkle_proof"
+name = "test_wrapped_asset"
 authors = ["Ryan Sproule"]
 entry = "main.sw"
 license = "Apache-2.0"
 
 [dependencies]
+swaypal = { path = "../../swaypal"}
