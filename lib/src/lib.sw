@@ -1,3 +1,4 @@
 library swaypal;
 
-dep token; 
+dep auth;
+dep token;

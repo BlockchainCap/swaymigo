@@ -12,7 +12,7 @@ abi TestToken {
 
 impl TestToken for Contract {
     fn mint(to: Address, amount: u64) {
-        mint_tokens(amount, to);
+        mint_tokens(to, amount);
     }
 
     fn burn(from: Address, amount: u64) {

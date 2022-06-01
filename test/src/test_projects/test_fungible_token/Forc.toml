@@ -1,8 +1,8 @@
 [project]
 name = "test_fungible_token"
-authors = ["Ryan Sproule"]
+authors = ["Ryan Sproule <ryan@blockchain.capital"]
 entry = "main.sw"
 license = "Apache-2.0"
 
 [dependencies]
-swaypal = { path = "../../src"}
+swaypal = { path = "../../../../lib"}
