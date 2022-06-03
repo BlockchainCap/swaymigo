@@ -4,3 +4,4 @@ target
 
 out
 **/*.rs.bk
+.DS_STORE
