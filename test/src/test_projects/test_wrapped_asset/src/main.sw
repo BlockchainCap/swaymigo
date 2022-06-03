@@ -1,9 +1,9 @@
 contract;
-use swaypal::wrapped_asset::*;
+use swaypal::token::wrapped_asset::*;
 
 abi WrappedToken {
     fn wrap_asset();
-    fn unwrap_asset();
+    fn unwrap_asset(amount: u64);
 }
 
 impl WrappedToken for Contract {
@@ -12,6 +12,6 @@ impl WrappedToken for Contract {
     }
 
     fn unwrap_asset(amount: u64) {
-        wnwrap(amount);
+        unwrap(amount);
     }
 }

@@ -14,7 +14,9 @@ pub fn wrap() {
     mint_tokens(owner, msg_amount());
 }
 
-pub fn unwrap(amount: u64, from: Address) {
+pub fn unwrap(amount: u64) {
+    // get the sender
+    let from = get_msg_sender_id_or_panic(msg_sender());
     let balance = get_balance(from);
     transfer(~Address::from(contract_id().into()), from, amount);
     burn_tokens(from, amount);
