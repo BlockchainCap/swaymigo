@@ -26,11 +26,21 @@ async fn test_wrap_no_coins_sent_should_fail() {
 }
 
 
-#[tokio::test]
-async fn wrap_native_assets() {
-    let (_instance, _id) = get_contract_instance().await;
+// #[tokio::test]
+// async fn wrap_native_assets() {
+//     let (_instance, _id) = get_contract_instance().await;
+//     let num_wallets = 1;
+//     let coins_per_wallet = 1;
+//     let amount_per_coin = 1_000_000;
 
-    // TODO: how to send real coins?????
-    let wrap = _instance.wrap_asset().call().await;
-    assert!(!wrap.is_err());
-}
+//     let config = WalletsConfig::new(
+//         Some(num_wallets),
+//         Some(coins_per_wallet),
+//         Some(amount_per_coin),
+//     );
+//     let wallets = launch_provider_and_get_wallets(config).await;
+
+//     // TODO: how to send real coins?????
+//     let wrap = _instance.wrap_asset().call().await;
+//     assert!(!wrap.is_err());
+// }

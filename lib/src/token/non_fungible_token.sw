@@ -82,6 +82,7 @@ pub fn burn(from: Address, id: u64) {
         revert(0);
     }
     temp_owner_insert(id, get_zero_address());
+    temp_balance_insert(from, temp_balance_get(from) - 1);
     log(Burn {
         from: from, id: id
     });
@@ -95,6 +96,9 @@ pub fn balance_of(of: Address) -> u64 {
     temp_balance_get(of)
 }
 
+pub fn get_supply() -> u64 {
+    return storage.supply;
+}
 //// Metadata
 // pub fn tokenURI(id: u64) -> string {
 //     storage.uris.get(id);
