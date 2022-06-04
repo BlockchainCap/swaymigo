@@ -40,6 +40,9 @@ async fn test_supply_snapshots() {
     let mint2 = _instance._mint(receiver, 100).call().await;
     assert!(!mint2.is_err());
 
+    let chkpt = _instance.checkpt(0).call().await.unwrap().value;
+    println!("{:?}", chkpt);
+
     let supply_snapshot = _instance
         ._get_supply_checkpoint(post_mint_block)
         .call()
@@ -56,8 +59,5 @@ async fn test_supply_snapshots() {
     // assert_eq!(balance_snapshot, 100);
 }
 
-
 #[tokio::test]
-async fn should_fail_block_not_mined() {
-
-}
+async fn should_fail_block_not_mined() {}

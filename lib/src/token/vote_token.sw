@@ -16,30 +16,36 @@ use std::{
     storage::*,
 };
 
-storage {
-    num_checkpoints: u64,
-    total_supply: u64,
-}
-
 /// TODO: replace with StorageMap when it is available in libraries
-// mapping of index => checkpoint. contains total supply checkpoints
 const SUPPLY_CHECKPOINTS: b256 = 0x7000000000000000000001233000000000000000000000000000000000000001;
-// mapping for sha(user, user_index) => checkpoint. Contains all checkpoints for a given user
-const VOTER_CHECKPOINTS = 0x0000000000000000000000000000000000000000000000000000000000000002;
-// mapping of user to their number of checkpoints.
-const VOTER_CHECKPOINT_COUNTS = 0x0000000000000000000000000000000000000000000000000000000000000003;
+const SUPPLY_CHECKPOINTS_COUNT: b256 = 0x7000000000000000000009873000000000000000000000000000000000000001;
+const TOTAL_SUPPLY: b256 = 0x6900000000000000000000000000000000000000000000000000000000000001;
+const VOTER_CHECKPOINTS: b256 = 0x3000000000000000000000000000000000000000000000000000000000000002;
+const VOTER_CHECKPOINT_COUNTS: b256 = 0x7200000000000000000000000000000000000000000000000000000000000003;
 
-struct Checkpoint {
+pub struct Checkpoint {
     block: u64,
     value: u64,
 }
 
 /// internal methods to replace insert and get on StorageMap, these should not contain logic beyond what storagemap would do
+fn temp_insert_total_supply(supply: u64) {
+    store::<u64>(sha256(TOTAL_SUPPLY), supply);
+}
+fn temp_get_total_supply() -> u64 {
+    get::<u64>(sha256(TOTAL_SUPPLY))
+}
+fn temp_insert_total_supply_count(count: u64) {
+    store::<u64>(sha256(SUPPLY_CHECKPOINTS_COUNT), count);
+}
+fn temp_get_total_supply_count() -> u64 {
+    get::<u64>(sha256(SUPPLY_CHECKPOINTS_COUNT))
+}
 fn temp_insert_total_supply_snapshot(index: u64, checkpoint: Checkpoint) {
     let key = sha256((SUPPLY_CHECKPOINTS, index));
     insert_checkpoint(key, checkpoint);
 }
-fn temp_get_total_supply_snapshot(index: u64) -> Checkpoint {
+pub fn temp_get_total_supply_snapshot(index: u64) -> Checkpoint {
     let key = sha256((SUPPLY_CHECKPOINTS, index));
     get_checkpoint(key)
 }
@@ -68,7 +74,6 @@ fn insert_checkpoint(key: b256, checkpoint: Checkpoint) {
     store::<u64>(block_slot, checkpoint.block);
     store::<u64>(value_slot, checkpoint.value);
 }
-
 fn get_checkpoint(key: b256) -> Checkpoint {
     // storing a struct is also not supported yet
     let block_slot = sha256((key, "block"));
@@ -82,31 +87,35 @@ fn get_checkpoint(key: b256) -> Checkpoint {
     }
 }
 
+//// PUBLIC FUNCTIONS
 pub fn mint(to: Address, mint_amount: u64) {
     mint_tokens(to, mint_amount);
-    storage.total_supply = storage.total_supply + mint_amount;
-    temp_insert_total_supply_snapshot(storage.num_checkpoints, Checkpoint {
-        block: height(), value: storage.total_supply
+    // storage.total_supply = storage.total_supply + mint_amount;
+    temp_insert_total_supply(temp_get_total_supply() + mint_amount);
+    temp_insert_total_supply_snapshot(temp_get_total_supply_count(), Checkpoint {
+        block: height(), value: temp_get_total_supply()
     });
     let to_checkpoint_count = temp_get_voter_checkpoint_count(to);
     temp_insert_voter_balance(to, to_checkpoint_count, Checkpoint {
         block: height(), value: get_balance(to)
     });
     temp_insert_voter_checkpoint_count(to, to_checkpoint_count + 1);
-    storage.num_checkpoints = storage.num_checkpoints + 1;
+    // storage.num_checkpoints = storage.num_checkpoints + 1;
+    temp_insert_total_supply_count(temp_get_total_supply_count() + 1);
 }
 
 pub fn burn(from: Address, burn_amount: u64) {
     burn_tokens(from, burn_amount);
-    storage.total_supply = storage.total_supply - burn_amount;
-    temp_insert_total_supply_snapshot(storage.num_checkpoints, Checkpoint {
-        block: height(), value: storage.total_supply
+    temp_insert_total_supply(temp_get_total_supply() - burn_amount);
+    temp_insert_total_supply_snapshot(temp_get_total_supply_count(), Checkpoint {
+        block: height(), value: temp_get_total_supply()
     });
     let from_checkpoint_count = temp_get_voter_checkpoint_count(from);
     temp_insert_voter_balance(from, from_checkpoint_count, Checkpoint {
         block: height(), value: get_balance(from)
     });
-    storage.num_checkpoints = storage.num_checkpoints + 1;
+    // storage.num_checkpoints = storage.num_checkpoints + 1;
+    temp_insert_total_supply_count(temp_get_total_supply_count() + 1);
     temp_insert_voter_checkpoint_count(from, from_checkpoint_count + 1);
 }
 
@@ -134,7 +143,7 @@ pub fn delegate(from: Address, to: Address, amount: u64) {
 
 pub fn get_supply_checkpoint(block: u64) -> u64 {
     assert(block < height());
-    let mut high = storage.num_checkpoints;
+    let mut high = temp_get_total_supply_count();
     let mut low = 0;
     while low < high {
         let mid = (high + low) / 2;

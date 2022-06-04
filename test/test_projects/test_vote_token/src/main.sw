@@ -11,6 +11,7 @@ abi VoteToken {
     fn _get_voting_power(block: u64, voter: Address) -> u64;
 
     fn blocknumber() -> u64;
+    fn checkpt(index: u64) -> Checkpoint;  
 }
 
 impl VoteToken for Contract {
@@ -37,4 +38,8 @@ impl VoteToken for Contract {
     fn blocknumber() -> u64 {
         height()
     }
+    fn checkpt(index: u64) -> Checkpoint {
+        temp_get_total_supply_snapshot(index)
+    }
+
 }
