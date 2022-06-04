@@ -1,10 +1,11 @@
-library balance_snapshot_token;
+library vote_token;
 // this is a token that keeps a index of all historical balances and total supply.
 // this is important for using tokens to vote
 
 use ::token::fungible_token::*;
 use std::{
     address::Address,
+    assert::*,
     block::*,
     chain::auth::msg_sender,
     context::balance_of,
@@ -22,13 +23,11 @@ storage {
 
 /// TODO: replace with StorageMap when it is available in libraries
 // mapping of index => checkpoint. contains total supply checkpoints
-const SUPPLY_CHECKPOINTS: b256 = 0x7000000000000000000000000000000000000000000000000000000000000001;
+const SUPPLY_CHECKPOINTS: b256 = 0x7000000000000000000001233000000000000000000000000000000000000001;
 // mapping for sha(user, user_index) => checkpoint. Contains all checkpoints for a given user
 const VOTER_CHECKPOINTS = 0x0000000000000000000000000000000000000000000000000000000000000002;
 // mapping of user to their number of checkpoints.
 const VOTER_CHECKPOINT_COUNTS = 0x0000000000000000000000000000000000000000000000000000000000000003;
-// storage mapping for everyones balances
-const BALANCES = 0x0000000000000000000000000000000000000000000000000000000000000004;
 
 struct Checkpoint {
     block: u64,
@@ -86,37 +85,55 @@ fn get_checkpoint(key: b256) -> Checkpoint {
 pub fn mint(to: Address, mint_amount: u64) {
     mint_tokens(to, mint_amount);
     storage.total_supply = storage.total_supply + mint_amount;
-    storage.num_checkpoints = storage.num_checkpoints + 1;
     temp_insert_total_supply_snapshot(storage.num_checkpoints, Checkpoint {
         block: height(), value: storage.total_supply
     });
     let to_checkpoint_count = temp_get_voter_checkpoint_count(to);
-    temp_insert_voter_balance(to, to_checkpoint_count + 1, Checkpoint {
+    temp_insert_voter_balance(to, to_checkpoint_count, Checkpoint {
         block: height(), value: get_balance(to)
     });
     temp_insert_voter_checkpoint_count(to, to_checkpoint_count + 1);
+    storage.num_checkpoints = storage.num_checkpoints + 1;
 }
 
 pub fn burn(from: Address, burn_amount: u64) {
     burn_tokens(from, burn_amount);
     storage.total_supply = storage.total_supply - burn_amount;
-    storage.num_checkpoints = storage.num_checkpoints + 1;
     temp_insert_total_supply_snapshot(storage.num_checkpoints, Checkpoint {
         block: height(), value: storage.total_supply
     });
     let from_checkpoint_count = temp_get_voter_checkpoint_count(from);
-    temp_insert_voter_balance(from, from_checkpoint_count + 1, Checkpoint {
+    temp_insert_voter_balance(from, from_checkpoint_count, Checkpoint {
         block: height(), value: get_balance(from)
     });
+    storage.num_checkpoints = storage.num_checkpoints + 1;
     temp_insert_voter_checkpoint_count(from, from_checkpoint_count + 1);
 }
 
 pub fn transfer_snapshot(from: Address, to: Address, amount: u64) {
     transfer(from, to, amount);
-    // snapshot logic
+    // snapshot logic, this is equivalent to delegation
+    delegate(from, to, amount);
 }
 
-pub fn lookup_supply_checkpoint(block: u64) -> u64 {
+pub fn delegate(from: Address, to: Address, amount: u64) {
+    let from_num_checkpoints = temp_get_voter_checkpoint_count(from);
+    let from_latest_checkpoint = temp_get_voter_balance(from, from_num_checkpoints);
+    temp_insert_voter_balance(from, from_num_checkpoints, Checkpoint {
+        value: from_latest_checkpoint.value - amount, block: height()
+    });
+    temp_insert_voter_checkpoint_count(from, from_num_checkpoints + 1);
+
+    let to_num_checkpoint = temp_get_voter_checkpoint_count(to);
+    let to_latest_checkpoint = temp_get_voter_balance(to, to_num_checkpoint);
+    temp_insert_voter_balance(to, to_num_checkpoint, Checkpoint {
+        value: to_latest_checkpoint.value + amount, block: height()
+    });
+    temp_insert_voter_checkpoint_count(to, to_num_checkpoint + 1);
+}
+
+pub fn get_supply_checkpoint(block: u64) -> u64 {
+    assert(block < height());
     let mut high = storage.num_checkpoints;
     let mut low = 0;
     while low < high {
@@ -136,8 +153,9 @@ pub fn lookup_supply_checkpoint(block: u64) -> u64 {
     }
 }
 /// Binary search to find the earliest checkpoint taken after the block provided
-pub fn lookup_voter_checkpoint(block: u64, address: Address) -> u64 {
-    let mut high = storage.num_checkpoints;
+pub fn get_voting_power(block: u64, address: Address) -> u64 {
+    assert(block < height());
+    let mut high = temp_get_voter_checkpoint_count(address);
     let mut low = 0;
     while low < high {
         let mid = (high + low) / 2;

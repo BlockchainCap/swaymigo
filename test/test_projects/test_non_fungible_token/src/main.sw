@@ -9,6 +9,8 @@ abi TestNFT {
     fn _balance_of(of: Address) -> u64;
     fn _supply() -> u64;
     fn _transfer(from: Address, to: Address, id: u64);
+
+    fn test() -> bool;
 }
 
 impl TestNFT for Contract {
@@ -34,5 +36,9 @@ impl TestNFT for Contract {
 
     fn _transfer(from: Address, to: Address, id: u64) {
        transfer(from, to, id)
+    }
+
+    fn test() -> bool {
+        false
     }
 }
