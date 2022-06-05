@@ -23,7 +23,7 @@ const TOTAL_SUPPLY: b256 = 0x690000000000000000000000000000000000000000000000000
 const VOTER_CHECKPOINTS: b256 = 0x3000000000000000000000000000000000000000000000000000000000000002;
 const VOTER_CHECKPOINT_COUNTS: b256 = 0x7200000000000000000000000000000000000000000000000000000000000003;
 
-pub struct Checkpoint {
+struct Checkpoint {
     block: u64,
     value: u64,
 }
@@ -45,7 +45,7 @@ fn temp_insert_total_supply_snapshot(index: u64, checkpoint: Checkpoint) {
     let key = sha256((SUPPLY_CHECKPOINTS, index));
     insert_checkpoint(key, checkpoint);
 }
-pub fn temp_get_total_supply_snapshot(index: u64) -> Checkpoint {
+fn temp_get_total_supply_snapshot(index: u64) -> Checkpoint {
     let key = sha256((SUPPLY_CHECKPOINTS, index));
     get_checkpoint(key)
 }
@@ -54,7 +54,7 @@ fn temp_insert_voter_balance(voter: Address, index: u64, checkpoint: Checkpoint)
     insert_checkpoint(key, checkpoint);
 }
 fn temp_get_voter_balance(voter: Address, index: u64) -> Checkpoint {
-    let key = sha256((VOTER_CHECKPOINTS, index));
+    let key = sha256((VOTER_CHECKPOINTS, voter, index));
     get_checkpoint(key)
 }
 fn temp_insert_voter_checkpoint_count(voter: Address, count: u64) {
@@ -151,7 +151,7 @@ pub fn get_supply_checkpoint(block: u64) -> u64 {
         if checkpoint.block > block {
             high = mid
         } else {
-            low = mid
+            low = mid + 1
         };
     }
     return if high == 0 {
@@ -161,7 +161,7 @@ pub fn get_supply_checkpoint(block: u64) -> u64 {
         last_cp.value
     }
 }
-/// Binary search to find the earliest checkpoint taken after the block provided
+
 pub fn get_voting_power(block: u64, address: Address) -> u64 {
     assert(block < height());
     let mut high = temp_get_voter_checkpoint_count(address);
@@ -172,7 +172,7 @@ pub fn get_voting_power(block: u64, address: Address) -> u64 {
         if checkpoint.block > block {
             high = mid
         } else {
-            low = mid
+            low = mid + 1 
         };
     }
     return if high == 0 {
