@@ -47,6 +47,7 @@ struct Transfer {
     id: u64,
 }
 
+// TODO: Update to use Identity pattern from std lib 
 pub fn transfer(from: Address, to: Address, id: u64) {
     let current_owner = owner_of(id);
     if current_owner != from {

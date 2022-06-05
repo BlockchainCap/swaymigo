@@ -56,6 +56,7 @@ pub fn burn_tokens(from: Address, burn_amount: u64) {
     });
 }
 
+// TODO convert to use the Identity pattern from the std lib 
 pub fn transfer(from: Address, to: Address, amount: u64) {
     if get_balance(from) >= amount {
         let sender_pre_balance = get_balance(from);

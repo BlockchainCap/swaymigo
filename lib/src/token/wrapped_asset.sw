@@ -4,7 +4,10 @@ use ::token::fungible_token::*;
 use ::auth::sender::*;
 use std::{address::Address, assert::assert, chain::auth::*, context::*, context::call_frames::*, token::*};
 
-// need to set this per deployment 
+// need to set this per deployment
+// alternative design option: have a single contract control ALL native 
+// asset that are wrapped. Need some consulation w team to see if this makes any
+// sense  
 const ASSET_ID: b256 = 0x0000000000000000000000000000000000000000000000000000000000000001;
 
 pub fn wrap() {
@@ -15,9 +18,10 @@ pub fn wrap() {
 }
 
 pub fn unwrap(amount: u64) {
-    // get the sender
     let from = get_msg_sender_id_or_panic(msg_sender());
     let balance = get_balance(from);
+    // transfer the native asset, some aliasing would be nice here to make it clear 
+    // this is the std libs transfer
     transfer(~Address::from(contract_id().into()), from, amount);
     burn_tokens(from, amount);
 }

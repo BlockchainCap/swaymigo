@@ -1,6 +1,4 @@
 library vote_token;
-// this is a token that keeps a index of all historical balances and total supply.
-// this is important for using tokens to vote
 
 use ::token::fungible_token::*;
 use std::{
@@ -65,9 +63,7 @@ fn temp_get_voter_checkpoint_count(voter: Address) -> u64 {
     let key = sha256((VOTER_CHECKPOINT_COUNTS, voter));
     get::<u64>(key)
 }
-// the checkpoints for every time the total supply changes
 fn insert_checkpoint(key: b256, checkpoint: Checkpoint) {
-    // storing a struct is also broken
     let block_slot = sha256((key, "block"));
     let value_slot = sha256((key, "value"));
 
@@ -75,7 +71,6 @@ fn insert_checkpoint(key: b256, checkpoint: Checkpoint) {
     store::<u64>(value_slot, checkpoint.value);
 }
 fn get_checkpoint(key: b256) -> Checkpoint {
-    // storing a struct is also not supported yet
     let block_slot = sha256((key, "block"));
     let value_slot = sha256((key, "value"));
 
@@ -125,6 +120,7 @@ pub fn transfer_snapshot(from: Address, to: Address, amount: u64) {
     delegate(from, to, amount);
 }
 
+// prob should be keeping track of all delegations
 pub fn delegate(from: Address, to: Address, amount: u64) {
     let from_num_checkpoints = temp_get_voter_checkpoint_count(from);
     let from_latest_checkpoint = temp_get_voter_balance(from, from_num_checkpoints);
@@ -162,6 +158,7 @@ pub fn get_supply_checkpoint(block: u64) -> u64 {
     }
 }
 
+// lots of duplicated code here, should make generic binary search
 pub fn get_voting_power(block: u64, address: Address) -> u64 {
     assert(block < height());
     let mut high = temp_get_voter_checkpoint_count(address);
