@@ -1,5 +1,5 @@
 contract;
-use swaypal::token::wrapped_asset::*;
+use swaymigo::token::wrapped_asset::*;
 
 abi WrappedToken {
     fn wrap_asset();

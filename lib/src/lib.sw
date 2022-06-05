@@ -1,4 +1,4 @@
-library swaypal;
+library swaymigo;
 
 dep auth;
 dep token;

@@ -1,5 +1,5 @@
 contract;
-use swaypal::token::fungible_token::*;
+use swaymigo::token::fungible_token::*;
 use std::address::Address;
 
 abi TestToken {

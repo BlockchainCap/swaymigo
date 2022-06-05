@@ -1,6 +1,6 @@
 contract;
 use std::address::Address;
-use swaypal::token::non_fungible_token::*;
+use swaymigo::token::non_fungible_token::*;
 
 abi TestNFT {
     fn _mint(to: Address, id: u64);
@@ -15,11 +15,11 @@ abi TestNFT {
 
 impl TestNFT for Contract {
     fn _mint(to: Address, id: u64) {
-       mint(to, id); 
+        mint(to, id);
     }
 
     fn _burn(from: Address, id: u64) {
-       burn(from, id); 
+        burn(from, id);
     }
 
     fn _owner_of(id: u64) -> Address {
@@ -35,7 +35,7 @@ impl TestNFT for Contract {
     }
 
     fn _transfer(from: Address, to: Address, id: u64) {
-       transfer(from, to, id)
+        transfer(from, to, id)
     }
 
     fn test() -> bool {

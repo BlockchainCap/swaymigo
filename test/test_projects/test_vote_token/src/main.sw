@@ -1,5 +1,5 @@
 contract;
-use swaypal::token::vote_token::*;
+use swaymigo::token::vote_token::*;
 use std::{address::Address, block::*};
 
 abi VoteToken {
@@ -11,8 +11,8 @@ abi VoteToken {
     fn _get_voting_power(block: u64, voter: Address) -> u64;
 
     fn blocknumber() -> u64;
-    // fn checkpt(index: u64) -> Checkpoint;  
-    // fn get_sup_count() -> u64;  
+    // fn checkpt(index: u64) -> Checkpoint;
+    // fn get_sup_count() -> u64;
 }
 
 impl VoteToken for Contract {
@@ -46,5 +46,4 @@ impl VoteToken for Contract {
     // fn get_sup_count() -> u64 {
     //     temp_get_total_supply_count()
     // }
-
 }

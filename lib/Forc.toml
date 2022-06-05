@@ -1,5 +1,5 @@
 [project]
-name = "swaypal"
+name = "swaymigo"
 authors = ["Ryan Sproule <ryan@blockchain.capital"]
 entry = "lib.sw"
 license = "Apache-2.0"

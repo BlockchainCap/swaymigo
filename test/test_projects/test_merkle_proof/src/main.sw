@@ -1,6 +1,6 @@
 contract;
 
-use swaypal::utils::merkle_proof::*;
+use swaymigo::utils::merkle_proof::*;
 
 abi MyContract {
     fn verify_proof() -> bool;
