@@ -8,7 +8,7 @@ use std::{address::Address, assert::assert, chain::auth::*, context::*, context:
 // alternative design option: have a single contract control ALL native 
 // asset that are wrapped. Need some consulation w team to see if this makes any
 // sense  
-const ASSET_ID: b256 = 0x0000000000000000000000000000000000000000000000000000000000000001;
+const ASSET_ID: b256 = 0x5670000000000000000000000000000000000000000000000000000000000123;
 
 pub fn wrap() {
     assert(msg_asset_id().into() == ASSET_ID);
