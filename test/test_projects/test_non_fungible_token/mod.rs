@@ -23,7 +23,7 @@ async fn get_contract_instance() -> (TestNFT, ContractId) {
 #[tokio::test]
 async fn can_mint() {
     let (_instance, _id) = get_contract_instance().await;
-    let address = LocalWallet::new_random(None).address();
+    let address = Identity::Address(LocalWallet::new_random(None).address());
     let mint_res = _instance._mint(address, 1).call().await;
     assert!(!mint_res.is_err());
 
@@ -38,7 +38,7 @@ async fn can_mint() {
 #[tokio::test]
 async fn can_burn() {
     let (_instance, _id) = get_contract_instance().await;
-    let address = LocalWallet::new_random(None).address();
+    let address = Identity::Address(LocalWallet::new_random(None).address());
     let mint_res = _instance._mint(address, 12).call().await;
     assert!(!mint_res.is_err());
     
@@ -50,15 +50,15 @@ async fn can_burn() {
     let balance = _instance._balance_of(address).call().await.unwrap().value;
     assert_eq!(balance, 0);
     let owner = _instance._owner_of(12).call().await.unwrap().value;
-    assert_eq!(owner, Address::from_str("0x0000000000000000000000000000000000000000000000000000000000000000").unwrap());
+    assert_eq!(owner, Identity::Address(Address::from_str("0x0000000000000000000000000000000000000000000000000000000000000000").unwrap()));
 }
 
 
 #[tokio::test]
 async fn can_transfer() {
     let (_instance, _id) = get_contract_instance().await;
-    let address = LocalWallet::new_random(None).address();
-    let address2 = LocalWallet::new_random(None).address();
+    let address = Identity::Address(LocalWallet::new_random(None).address());
+    let address2 = Identity::Address(LocalWallet::new_random(None).address());
     let mint_res = _instance._mint(address, 12).call().await;
     assert!(!mint_res.is_err());
     
