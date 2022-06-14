@@ -1,6 +1,6 @@
 [project]
 name = "test_non_fungible_token"
-authors = ["Ryan Sproule"]
+authors = ["Ryan Sproule <ryan@blockchain.capital>"]
 entry = "main.sw"
 license = "Apache-2.0"
 
