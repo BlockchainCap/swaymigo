@@ -13,7 +13,7 @@ pub fn get_msg_sender_id_or_panic(result: Result<Identity, AuthError>) -> Identi
             match s {
                 Identity::ContractId(v) => Identity::ContractId(v),
                 Identity::Address(v) => Identity::Address(v),
-                _ => revert(0),
+                // _ => revert(0),
             }
         },
         _ => {revert(0);},
