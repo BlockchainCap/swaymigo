@@ -2,7 +2,7 @@ library wrapped_asset;
 
 use ::token::fungible_token::*;
 use ::auth::sender::*;
-use std::{address::Address, assert::assert, chain::auth::*, context::*, context::call_frames::*, token::*};
+use std::{identity::Identity, assert::assert, chain::auth::*, context::*, context::call_frames::*, token::*};
 
 // need to set this per deployment
 // alternative design option: have a single contract control ALL native 
@@ -11,17 +11,17 @@ use std::{address::Address, assert::assert, chain::auth::*, context::*, context:
 const ASSET_ID: b256 = 0x5670000000000000000000000000000000000000000000000000000000000123;
 
 pub fn wrap() {
-    assert(msg_asset_id().into() == ASSET_ID);
-    assert(msg_amount() > 0);
-    let owner = get_msg_sender_id_or_panic(msg_sender());
-    mint_tokens(owner, msg_amount());
+    // assert(msg_asset_id().into() == ASSET_ID);
+    // assert(msg_amount() > 0);
+    // let owner = get_msg_sender_id_or_panic(msg_sender());
+    // mint_tokens(owner, msg_amount());
 }
 
 pub fn unwrap(amount: u64) {
-    let from = get_msg_sender_id_or_panic(msg_sender());
-    let balance = get_balance(from);
+    // let from = get_msg_sender_id_or_panic(msg_sender());
+    // let balance = get_balance(from);
     // transfer the native asset, some aliasing would be nice here to make it clear 
     // this is the std libs transfer
-    transfer(~Address::from(contract_id().into()), from, amount);
-    burn_tokens(from, amount);
+    // transfer(contract_id(), from, amount);
+    // burn_tokens(from, amount);
 }

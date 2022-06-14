@@ -1,20 +1,24 @@
 library fungible_token;
-use std::{address::Address, hash::*, logging::*, revert::*, storage::*};
+use std::{identity::Identity, hash::*, logging::*, revert::*, storage::*};
 
 // storage not currently supported in libraries, do it manually 
-storage {
-    supply: u64,
-    // TODO storageMap doesnt currently work in libs
-    // balances: StorageMap<Address, u64>, 
-}
+const SUPPLY_BALANCE: b256 = 0x00000000000000000000000000000000000000000000000000000000aaaaaba1;
 const BALANCE_SALT: b256 = 0x0000000000000000000000000000000000000000000000000000000000000ba1;
 
-fn temp_balance_insert(key: Address, val: u64) {
+fn temp_get_supply() -> u64 {
+    get::<u64>(SUPPLY_BALANCE)
+}
+
+fn temp_set_supply(s: u64) {
+    store::<u64>(SUPPLY_BALANCE, s)
+}
+
+fn temp_balance_insert(key: Identity, val: u64) {
     let slot = sha256((BALANCE_SALT, key));
     store::<u64>(slot, val);
 }
 
-fn temp_balance_get(key: Address) -> u64 {
+fn temp_balance_get(key: Identity) -> u64 {
     let slot = sha256((BALANCE_SALT, key));
     get::<u64>(slot)
 }
@@ -28,13 +32,14 @@ struct Burn {
 }
 
 struct Transfer {
-    from: Address,
-    to: Address,
+    from: Identity,
+    to: Identity,
     amount: u64,
 }
 
-pub fn mint_tokens(to: Address, mint_amount: u64) {
-    storage.supply = storage.supply + mint_amount;
+pub fn mint_tokens(to: Identity, mint_amount: u64) {
+    // storage.supply = storage.supply + mint_amount;
+    temp_set_supply(temp_get_supply() + mint_amount);
     let curr_balance = get_balance(to);
     // storage.balances.insert(to, mint_amount + curr_balance);
     temp_balance_insert(to, mint_amount + curr_balance);
@@ -43,12 +48,13 @@ pub fn mint_tokens(to: Address, mint_amount: u64) {
     });
 }
 
-pub fn burn_tokens(from: Address, burn_amount: u64) {
+pub fn burn_tokens(from: Identity, burn_amount: u64) {
     let curr_balance = get_balance(from);
     if burn_amount > curr_balance {
         revert(0);
     }
-    storage.supply = storage.supply - burn_amount;
+    // storage.supply = storage.supply - burn_amount;
+    temp_set_supply(temp_get_supply() - burn_amount);
     // storage.balances.insert(from, curr_balance - burn_amount);
     temp_balance_insert(from, curr_balance - burn_amount);
     log(Burn {
@@ -57,7 +63,7 @@ pub fn burn_tokens(from: Address, burn_amount: u64) {
 }
 
 // TODO convert to use the Identity pattern from the std lib 
-pub fn transfer(from: Address, to: Address, amount: u64) {
+pub fn transfer(from: Identity, to: Identity, amount: u64) {
     if get_balance(from) >= amount {
         let sender_pre_balance = get_balance(from);
         let receiver_pre_balance = get_balance(to);
@@ -73,10 +79,10 @@ pub fn transfer(from: Address, to: Address, amount: u64) {
     });
 }
 
-pub fn get_balance(of: Address) -> u64 {
+pub fn get_balance(of: Identity) -> u64 {
     return temp_balance_get(of);
 }
 
 pub fn get_total_supply() -> u64 {
-    return storage.supply;
+    return temp_get_supply()
 }

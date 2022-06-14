@@ -1,6 +1,6 @@
 library zero_address;
-use std::address::Address;
+use std::{identity::Identity, address::Address};
 
-pub fn get_zero_address() -> Address {
-    ~Address::from(0x0000000000000000000000000000000000000000000000000000000000000000)
+pub fn get_zero_address() -> Identity {
+    Identity::Address(~Address::from(0x0000000000000000000000000000000000000000000000000000000000000000))
 }
