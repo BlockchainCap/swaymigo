@@ -120,7 +120,7 @@ pub fn transfer_snapshot(from: Identity, to: Identity, amount: u64) {
     delegate(from, to, amount);
 }
 
-// prob should be keeping track of all delegations
+// TODO: prob should be keeping track of all delegations
 pub fn delegate(from: Identity, to: Identity, amount: u64) {
     let from_num_checkpoints = temp_get_voter_checkpoint_count(from);
     let from_latest_checkpoint = temp_get_voter_balance(from, from_num_checkpoints);
@@ -158,7 +158,7 @@ pub fn get_supply_checkpoint(block: u64) -> u64 {
     }
 }
 
-// lots of duplicated code here, should make generic binary search
+// TODO: lots of duplicated code here, should make generic binary search
 pub fn get_voting_power(block: u64, of: Identity) -> u64 {
     assert(block < height());
     let mut high = temp_get_voter_checkpoint_count(of);
