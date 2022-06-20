@@ -1,17 +1,17 @@
 [[package]]
 name = 'core'
-source = 'path+from-root-A06C4963AA38181F'
+source = 'path+from-root-0B2944DF4C13FC4E'
 dependencies = []
 
 [[package]]
 name = 'std'
-source = 'git+https://github.com/fuellabs/sway?tag=v0.15.2#eab07e48bc6dbd0c80aedc1e363bb63a6d5f0e28'
+source = 'git+https://github.com/fuellabs/sway?tag=v0.16.1#dcf22453aeb054335d96ef810da9d4f756d869b7'
 dependencies = ['core']
 
 [[package]]
 name = 'swaymigo'
 source = 'path+from-root-0B2944DF4C13FC4E'
-dependencies = ['std']
+dependencies = []
 
 [[package]]
 name = 'test_merkle_proof'
