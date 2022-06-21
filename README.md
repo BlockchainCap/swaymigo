@@ -19,6 +19,10 @@ cargo test
 
 ## Known Issues
 Sway is nascent. There are missing features and some lack of cleanliness. For now this contracts work around these issues to the best of our ability. Expect the contracts to evolve over time as the language itself evolves.
+Workarounds/hacks include: 
+- Manual storage manipulation in libraries because `storage` keyword and StorageMap not yet supported in libs
+- Low level asset manipulation not being utilized (implementation detail for now)
+- Vec not yet supported (no longer true as of forc 16)
 
 
 # Disclaimer
