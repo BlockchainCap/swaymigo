@@ -9,7 +9,7 @@ publish = false
 fuels = "0.14"
 fuels-abigen-macro = "0.14"
 tokio = { version = "1.12", features = ["rt", "macros"] }
-
+sha2 = "0.10"
 
 [[test]]
 harness = true

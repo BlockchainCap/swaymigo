@@ -3432,6 +3432,7 @@ version = "0.0.0"
 dependencies = [
  "fuels",
  "fuels-abigen-macro",
+ "sha2 0.10.2",
  "tokio",
 ]
 
