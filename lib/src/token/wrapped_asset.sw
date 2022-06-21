@@ -10,6 +10,7 @@ use std::{identity::Identity, assert::assert, chain::auth::*, context::*, contex
 // sense  
 const ASSET_ID: b256 = 0x5670000000000000000000000000000000000000000000000000000000000123;
 
+#[storage(read, write)]
 pub fn wrap() {
     assert(msg_asset_id().into() == ASSET_ID);
     assert(msg_amount() > 0);
@@ -17,11 +18,12 @@ pub fn wrap() {
     mint_tokens(owner, msg_amount());
 }
 
+#[storage(read, write)]
 pub fn unwrap(amount: u64) {
     let from = get_msg_sender_id_or_panic(msg_sender());
     let balance = get_balance(from);
     // transfer the native asset, some aliasing would be nice here to make it clear 
     // this is the std libs transfer
-    transfer(Identity::ContractId(contract_id()), from, amount);
+    f_transfer(Identity::ContractId(contract_id()), from, amount);
     burn_tokens(from, amount);
 }
