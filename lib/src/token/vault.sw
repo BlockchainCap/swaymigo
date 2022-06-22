@@ -1,5 +1,14 @@
 library vault;
-use std::{assert::*, contract_id::ContractId, chain::auth::*, identity::*, logging::*, storage::*, token::*};
+use std::{
+    assert::*, 
+    contract_id::ContractId, 
+    chain::auth::*, 
+    identity::*, 
+    logging::*, 
+    storage::*, 
+    token::*, 
+    context::*, 
+    context::call_frames::*};
 use ::auth::sender::*;
 
 struct Deposit {
@@ -17,9 +26,10 @@ struct Withdraw {
     shares: u64,
 }
 
-#[storage(read, write)]pub fn deposit(assets: u64, receiver: Identity) {
+#[storage(read, write)]pub fn deposit(receiver: Identity) {
     let caller = get_msg_sender_id_or_panic(msg_sender());
-    // shares is the proportion of the pool that is owned based on current supply
+    // note that this lib function does not check the token being deposited.
+    let assets = msg_amount(); 
     let shares = get_shares_from_assets(assets);
     assert(shares > 0);
     mint_to(shares, receiver);
@@ -28,7 +38,10 @@ struct Withdraw {
     });
 }
 
-#[storage(read, write)]pub fn withdraw(assets: u64, receiver: Identity, asset_id: ContractId) {
+#[storage(read, write)]pub fn withdraw(receiver: Identity) {
+    // the contract id native asset is the share token
+    assert(msg_asset_id() == contract_id());
+    let assets = msg_amount();
     let caller = get_msg_sender_id_or_panic(msg_sender());
     // shares is the proportion of the pool that is owned based on current supply
     let shares = get_shares_from_assets(assets);
