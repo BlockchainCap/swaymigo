@@ -1,4 +1,9 @@
 [[package]]
+name = 'basic_token'
+source = 'root'
+dependencies = ['std']
+
+[[package]]
 name = 'core'
 source = 'path+from-root-A102296F39438745'
 dependencies = []
@@ -7,16 +12,3 @@ dependencies = []
 name = 'std'
 source = 'git+https://github.com/fuellabs/sway?tag=v0.16.1#dcf22453aeb054335d96ef810da9d4f756d869b7'
 dependencies = ['core']
-
-[[package]]
-name = 'swaymigo'
-source = 'path+from-root-08BF37FBF3999EF2'
-dependencies = ['std']
-
-[[package]]
-name = 'test_vault'
-source = 'root'
-dependencies = [
-    'std',
-    'swaymigo',
-]

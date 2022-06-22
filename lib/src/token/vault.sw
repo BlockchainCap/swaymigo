@@ -1,14 +1,17 @@
 library vault;
 use std::{
-    assert::*, 
-    contract_id::ContractId, 
-    chain::auth::*, 
-    identity::*, 
-    logging::*, 
-    storage::*, 
-    token::*, 
-    context::*, 
-    context::call_frames::*};
+    assert::*,
+    chain::auth::*,
+    context::*,
+    context::call_frames::*,
+    contract_id::ContractId,
+    hash::*,
+    identity::*,
+    logging::*,
+    storage::*,
+    token::*,
+};
+
 use ::auth::sender::*;
 
 struct Deposit {
@@ -26,60 +29,78 @@ struct Withdraw {
     shares: u64,
 }
 
+// receive asset, mint the shares
 #[storage(read, write)]pub fn deposit(receiver: Identity) {
     let caller = get_msg_sender_id_or_panic(msg_sender());
     // note that this lib function does not check the token being deposited.
-    let assets = msg_amount(); 
+    let assets = msg_amount();
     let shares = get_shares_from_assets(assets);
     assert(shares > 0);
     mint_to(shares, receiver);
+    temp_set_share_supply(msg_asset_id(), temp_get_share_supply(msg_asset_id()) + shares);
     log(Deposit {
         caller, receiver, assets, shares
     });
 }
 
-#[storage(read, write)]pub fn withdraw(receiver: Identity) {
-    // the contract id native asset is the share token
+// receive shares, return the locked asset
+#[storage(read, write)]pub fn withdraw(receiver: Identity, asset_id: ContractId) {
     assert(msg_asset_id() == contract_id());
-    let assets = msg_amount();
+    let shares = msg_amount();
     let caller = get_msg_sender_id_or_panic(msg_sender());
     // shares is the proportion of the pool that is owned based on current supply
-    let shares = get_shares_from_assets(assets);
-    assert(shares > 0);
+    let assets = get_assets_from_shares(shares);
+    assert(assets > 0);
+    // return the assets
+    transfer(assets, asset_id, receiver);
+    // destroy the shares
     burn(shares);
-    // transfer(shares, asset_id, Identity::ContractId(asset_id));
+    temp_set_share_supply(msg_asset_id(), temp_get_share_supply(msg_asset_id()) - shares);
     log(Withdraw {
         caller, receiver, owner: receiver, assets, shares
     });
 }
 
-#[storage(read, write)]pub fn mint(shares: u64, receiver: Identity) {
-}
-
-#[storage(read, write)]pub fn redeem(shares: u64, receiver: Identity, owner: Identity) {
-}
-
-#[storage(read)]pub fn get_total_assets() -> u64 {
-    // HACK: keeping track of total assets in a storage var, pretty sure should be able to
-    // get this from the native asset somehow
-    temp_get_total_supply()
-}
-
 //// Internals
-#[storage(read)]fn get_shares_from_assets(assets: u64) -> u64 {
-    if get_total_assets() == 0 {
+#[storage(read)]
+fn get_shares_from_assets(assets: u64) -> u64 {
+    // total assets locked is the balance of the contact
+    let locked_amount = balance_of(msg_asset_id(), contract_id()); // CHECK: does this get incremented BEFORE the contract logic or AFTER
+    // user should get a number of shares that is proportional to the
+    // is there a way to query the total shares... for now store in contract storage
+    let total_shares = temp_get_share_supply(msg_asset_id());
+
+    if total_shares == 0 {
         assets
     } else {
-        assets / get_total_assets()
+        // proportional amount of shares based on % of supply
+        // need to make this work w int math
+        assets * (total_shares / locked_amount)
     }
 }
 
-///// State management
-// TODO: Remove the manual stuff once storage supported in libs
-const TOTAL_SUPPLY: b256 = 0x7000000000000000000001233002723764000000000000000000000000000001;
-#[storage(read)]fn temp_get_total_supply() -> u64 {
-    get::<u64>(TOTAL_SUPPLY)
+#[storage(read)]
+fn get_assets_from_shares(shares: u64) -> u64 {
+    // total assets locked is the balance of the contact
+    let locked_amount = balance_of(msg_asset_id(), contract_id()); // CHECK: does this get incremented BEFORE the contract logic or AFTER
+    // user should get a number of shares that is proportional to the
+    // is there a way to query the total shares... for now store in contract storage
+    let total_shares = temp_get_share_supply(msg_asset_id());
+
+    if total_shares == 0 {
+        shares
+    } else {
+        // proportional amount of shares based on % of supply
+        // need to make this work w int math
+        shares * (locked_amount / total_shares)
+    }
 }
-// #[storage(write)]fn temp_set_total_supply(sup: u64) {
-//     store::<u64>(TOTAL_SUPPLY, sup)
-// }
+
+//// STORAGE
+const SHARE_SUPPLY: b256 = 0x0123012012302310123012301230123012301230290943898238485820482839;
+#[storage(read)]fn temp_get_share_supply(shares_id: ContractId) -> u64 {
+    get::<u64>(sha256(SHARE_SUPPLY, shares_id))
+}
+#[storage(write)]fn temp_set_share_supply(shares_id: ContractId, supply: u64) {
+    store::<u64>(sha256(SHARE_SUPPLY, shares_id), supply)
+}
