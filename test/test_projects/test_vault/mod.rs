@@ -99,9 +99,7 @@ async fn test_vault_e2e() {
         .append_variable_outputs(1)
         .call()
         .await;
-    println!("{:?}", withdraw_tx);
     assert!(!withdraw_tx.is_err());
-    println!("{:?}", withdraw_tx.unwrap().logs);
     let shares_balance = wallet.get_asset_balance(&shares_asset_id).await.unwrap();
     let asset_balance = wallet.get_asset_balance(&asset_id).await.unwrap();
     assert_eq!(shares_balance, 5);
@@ -115,6 +113,38 @@ async fn test_vault_e2e() {
         .unwrap()
         .value;
     assert_eq!(assets_locked, 10);
+    // sim just burns tokens to the other contract
+    let _sim_loss = vault_instance
+        .simulate_vault_losing(5, token_contract)
+        .set_contracts(&[token_contract])
+        .append_variable_outputs(1)
+        .call()
+        .await;
+    assert!(!_sim_loss.is_err());
+    let assets_locked = vault_instance
+        ._get_assets_locked()
+        .call()
+        .await
+        .unwrap()
+        .value;
+    assert_eq!(assets_locked, 5);
+    let _withdraw_tx = vault_instance
+        ._withdraw(wallet.address())
+        .call_params(CallParameters::new(Some(5), Some(shares_asset_id)))
+        .append_variable_outputs(1)
+        .call()
+        .await;
+    let shares_balance = wallet.get_asset_balance(&shares_asset_id).await.unwrap();
+    let asset_balance = wallet.get_asset_balance(&asset_id).await.unwrap();
+    assert_eq!(shares_balance, 0);
+    assert_eq!(asset_balance, 95);
+    let assets_locked = vault_instance
+        ._get_assets_locked()
+        .call()
+        .await
+        .unwrap()
+        .value;
+    assert_eq!(assets_locked, 0);
 }
 
 #[tokio::test]

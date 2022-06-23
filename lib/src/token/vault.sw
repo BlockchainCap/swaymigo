@@ -110,10 +110,3 @@ const SHARE_SUPPLY: b256 = 0x012301201230231012301230123012301230123029094389823
 #[storage(write)]fn temp_set_share_supply(supply: u64) {
     store::<u64>(sha256(SHARE_SUPPLY), supply)
 }
-
-
-///// TESTING HELPERS 
-#[storage(read)]
-pub fn get_assets_locked(asset_id: ContractId) -> u64 {
-    balance_of(asset_id, contract_id())
-}
