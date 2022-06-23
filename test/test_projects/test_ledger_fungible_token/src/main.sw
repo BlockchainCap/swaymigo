@@ -1,5 +1,5 @@
 contract;
-use swaymigo::token::fungible_token::*;
+use swaymigo::token::ledger_fungible_token::*;
 use std::{identity::Identity, address::Address};
 
 abi TestToken {

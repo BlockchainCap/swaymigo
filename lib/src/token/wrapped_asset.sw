@@ -1,6 +1,6 @@
 library wrapped_asset;
 
-use ::token::fungible_token::*;
+use ::token::ledger_fungible_token::*;
 use ::auth::sender::*;
 use std::{identity::Identity, assert::assert, chain::auth::*, context::*, context::call_frames::*, token::*};
 

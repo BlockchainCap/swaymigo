@@ -1,4 +1,4 @@
-library fungible_token;
+library ledger_fungible_token;
 use std::{hash::*, identity::Identity, logging::*, revert::*, storage::*};
 
 // storage not currently supported in libraries, do it manually

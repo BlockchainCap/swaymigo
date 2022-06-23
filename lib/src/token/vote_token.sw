@@ -1,6 +1,6 @@
 library vote_token;
 
-use ::token::fungible_token::*;
+use ::token::ledger_fungible_token::*;
 use std::{
     identity::Identity,
     assert::*,

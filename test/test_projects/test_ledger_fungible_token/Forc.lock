@@ -10,11 +10,11 @@ dependencies = ['core']
 
 [[package]]
 name = 'swaymigo'
-source = 'path+from-root-A0FA0B06A9BCC8B2'
+source = 'path+from-root-07178826271E05BD'
 dependencies = ['std']
 
 [[package]]
-name = 'test_fungible_token'
+name = 'test_ledger_fungible_token'
 source = 'root'
 dependencies = [
     'std',

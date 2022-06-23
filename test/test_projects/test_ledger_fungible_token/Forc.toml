@@ -1,5 +1,5 @@
 [project]
-name = "test_fungible_token"
+name = "test_ledger_fungible_token"
 authors = ["Ryan Sproule <ryan@blockchain.capital"]
 entry = "main.sw"
 license = "Apache-2.0"

@@ -2,13 +2,13 @@ use fuels::{prelude::*, tx::ContractId };
 use fuels_abigen_macro::abigen;
 
 // Load abi from json
-abigen!(TestToken, "test_projects/test_fungible_token/out/debug/test_fungible_token-abi.json");
+abigen!(TestToken, "test_projects/test_ledger_fungible_token/out/debug/test_ledger_fungible_token-abi.json");
 
 async fn get_contract_instance() -> (TestToken, ContractId) {
     // Launch a local network and deploy the contract
     let wallet = launch_provider_and_get_single_wallet().await;
 
-    let id = Contract::deploy("test_projects/test_fungible_token/out/debug/test_fungible_token.bin", &wallet, TxParameters::default())
+    let id = Contract::deploy("test_projects/test_ledger_fungible_token/out/debug/test_ledger_fungible_token.bin", &wallet, TxParameters::default())
         .await
         .unwrap();
 
