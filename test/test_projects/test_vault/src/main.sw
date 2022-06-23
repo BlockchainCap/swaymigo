@@ -14,6 +14,8 @@ abi VaultTest {
     #[storage(read, write)]fn simulate_vault_earning();
     #[storage(read, write)]fn simulate_vault_losing(amount: u64);
     #[storage(write)]fn set_asset_id(asset_id: b256);
+
+    #[storage(read)]fn _get_assets_locked() -> u64;
 }
 impl VaultTest for Contract {
     #[storage(read, write)]fn _deposit(receiver: Address) {
@@ -21,7 +23,7 @@ impl VaultTest for Contract {
         deposit(Identity::Address(receiver));
     }
     #[storage(read, write)]fn _withdraw(receiver: Address) {
-        withdraw(Identity::Address(receiver), contract_id());
+        withdraw(Identity::Address(receiver), ~ContractId::from(storage.asset_id));
     }
     #[storage(read, write)]fn simulate_vault_earning() {
         // just receive token of type asset id
@@ -33,5 +35,10 @@ impl VaultTest for Contract {
 
     #[storage(write)]fn set_asset_id(asset_id: b256) {
         storage.asset_id = asset_id
+    }
+
+    #[storage(read)] 
+    fn _get_assets_locked() -> u64 {
+        get_assets_locked(~ContractId::from(storage.asset_id))
     }
 }
