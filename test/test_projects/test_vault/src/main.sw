@@ -6,7 +6,6 @@ storage {
     asset_id: b256,
 }
 
-
 abi VaultTest {
     #[storage(read, write)]fn _deposit(receiver: Address);
     #[storage(read, write)]fn _withdraw(receiver: Address);
