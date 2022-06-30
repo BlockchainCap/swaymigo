@@ -15,8 +15,6 @@ abi TestNFT {
     fn _balance_of(of: Address) -> u64;
     #[storage(read)]
     fn _supply() -> u64;
-
-    fn t() -> false;
 }
 
 impl TestNFT for Contract {

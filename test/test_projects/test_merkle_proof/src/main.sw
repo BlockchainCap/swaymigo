@@ -1,6 +1,6 @@
 contract;
 
-use swaymigo::utils::merkle_proof::*;
+// use swaymigo::utils::merkle_proof::*;
 
 abi MerkleProofTestContract {
     // TODO For now, Vec<T> does not work in storage nor in the ABI (contract method arguments and returns).

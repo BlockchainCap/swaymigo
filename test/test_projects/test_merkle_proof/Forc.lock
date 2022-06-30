@@ -1,6 +1,6 @@
 [[package]]
 name = 'core'
-source = 'path+from-root-0B2944DF4C13FC4E'
+source = 'path+from-root-8301F3F92B005965'
 dependencies = []
 
 [[package]]
@@ -11,7 +11,7 @@ dependencies = ['core']
 [[package]]
 name = 'swaymigo'
 source = 'path+from-root-0B2944DF4C13FC4E'
-dependencies = []
+dependencies = ['std']
 
 [[package]]
 name = 'test_merkle_proof'
