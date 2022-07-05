@@ -130,7 +130,7 @@ pub fn burn(from: Identity, burn_amount: u64) {
 }
 
 #[storage(read, write)]
-pub fn transfer_snapshot(from: Identity, to: Identity, amount: u64) {
+pub fn transfer(from: Identity, to: Identity, amount: u64) {
     f_transfer(from, to, amount);
     // snapshot logic, this is equivalent to delegation
     delegate(from, to, amount);

@@ -36,7 +36,7 @@ impl VoteToken for Contract {
     }
     #[storage(read, write)]
     fn _transfer(from: Address, to: Address, amount: u64) {
-        transfer_snapshot(Identity::Address(from), Identity::Address(to), amount);
+        transfer(Identity::Address(from), Identity::Address(to), amount);
     }
     #[storage(read)]
     fn _get_supply_checkpoint(block: u64) -> u64 {

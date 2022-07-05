@@ -1,0 +1,8 @@
+[project]
+name = "governor"
+authors = ["Ryan Sproule <ryan@blockchain.capital>"]
+entry = "main.sw"
+license = "Apache-2.0"
+
+[dependencies]
+swaymigo = {path = "../../lib"}
