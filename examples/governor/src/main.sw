@@ -9,6 +9,40 @@ use swaymigo::token::vote_token::{
     transfer as _transfer,
 };
 
+enum ProposalState {
+    Pending: (),
+    Active: (), 
+    Canceled: (),
+    Defeated: (), 
+    Succeeded: (),
+    Queued: (),
+    Expired: (),
+    Executed: ()
+}
+
+struct ProposalCreated {
+    proposal_id: u64, 
+    proposer: Identity,
+    start_block: u64, 
+    end_block: u64,
+    description: string
+}
+
+struct VoteCast {
+    voter: Identity,
+    proposal_id: u64,
+    support: u8,
+    reason: string
+}
+
+struct ProposalCanceled {
+    proposal_id: u64
+}
+
+struct ProposalExecuted {
+    proposal_id: u64
+}
+
 abi Governor {
     #[storage(read, write)]pub fn mint(to: Identity, amount: u64);
     #[storage(read, write)]pub fn burn(from: Identity, amount: u64);
@@ -18,12 +52,23 @@ abi Governor {
     #[storage(read, write)]fn delegate(from: Identity, to: Identity, amount: u64);
     #[storage(read)]fn get_supply_checkpoint(block: u64) -> u64;
     #[storage(read)]fn get_voting_power(block: u64, of: Identity) -> u64;
+
+    #[storage(read)]fn get_state(proposal_id: u64) -> ProposalState;
+    #[storage(read)]fn get_proposal_snapshot(proposal_id: u64) -> u64;
+    #[storage(read)]fn get_proposal_deadline(proposal_id: u64) -> u64;
+    #[storage(read)]fn get_voting_delay() -> u64;
+    #[storage(read)]fn get_voring_period() -> u64;
+    #[storage(read)]fn get_quorum() -> u64;
+    #[storage(read)]fn has_voted(account: Identity) -> bool;
+    #[storage(read, write)]fn propose() -> u64;
+    #[storage(read, write)]fn execute() -> u64;
+    #[storage(read, write)]fn cast_vote(proposal_id: u64, support: u8) -> u64;
+    #[storage(read, write)]fn cast_vote_with_reason(proposal_id: u64, support: u8, reason: string) -> u64;
 }
 
 storage {
     contract_id: ContractId,
 }
-
 impl Governor for Contract {
     #[storage(read, write)]pub fn mint(to: Identity, amount: u64) {
         _mint(to, amount);
@@ -55,5 +100,28 @@ impl Governor for Contract {
 
     #[storage(read)]pub fn get_voting_power(block: u64, of: Identity) -> u64 {
         _get_voting_power(block, of)
+    }
+
+    #[storage(read)]fn get_state(proposal_id: u64) -> ProposalState {
+    }
+    #[storage(read)]fn get_proposal_snapshot(proposal_id: u64) -> u64 {
+    }
+    #[storage(read)]fn get_proposal_deadline(proposal_id: u64) -> u64 {
+    }
+    #[storage(read)]fn get_voting_delay() -> u64 {
+    }
+    #[storage(read)]fn get_voring_period() -> u64 {
+    }
+    #[storage(read)]fn get_quorum() -> u64 {
+    }
+    #[storage(read)]fn has_voted(account: Identity) -> bool {
+    }
+    #[storage(read, write)]fn propose() -> u64 {
+    }
+    #[storage(read, write)]fn execute() -> u64 {
+    }
+    #[storage(read, write)]fn cast_vote(proposal_id: u64, support: u8) -> u64 {
+    }
+    #[storage(read, write)]fn cast_vote_with_reason(proposal_id: u64, support: u8, reason: string) -> u64 {
     }
 }
