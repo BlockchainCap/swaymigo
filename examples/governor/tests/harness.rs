@@ -25,5 +25,11 @@ async fn test_get_asset_id() {
     assert!(!get_asset_tx.is_err());
     assert_eq!(get_asset_tx.unwrap().value, _id);
 
-}
+    // set up a new wallet 
+    let wallet = LocalWallet::new_random(None);
+    // need to mint some beans 
+    let mint_tx=_instance.mint(governor_mod::Identity::Address(wallet.address()), 100).call().await;
+    assert!(!mint_tx.is_err());
 
+    
+}

@@ -1,5 +1,15 @@
 contract;
-use std::{address::Address, contract_id::ContractId, identity::Identity};
+use std::{
+    address::Address,
+    assert::*,
+    block::*,
+    contract_id::ContractId,
+    hash::*,
+    identity::Identity,
+    storage::*,
+    vec::*
+};
+
 use swaymigo::token::vote_token::{
     burn as _burn,
     delegate as _delegate,
@@ -11,36 +21,43 @@ use swaymigo::token::vote_token::{
 
 enum ProposalState {
     Pending: (),
-    Active: (), 
+    Active: (),
     Canceled: (),
-    Defeated: (), 
+    Defeated: (),
     Succeeded: (),
     Queued: (),
     Expired: (),
-    Executed: ()
+    Executed: (),
+}
+
+struct Proposal {
+    vote_start: u64,
+    vote_end: u64,
+    executed: bool,
+    canceled: bool,
 }
 
 struct ProposalCreated {
-    proposal_id: u64, 
+    proposal_id: u64,
     proposer: Identity,
-    start_block: u64, 
+    start_block: u64,
     end_block: u64,
-    description: string
+    description: Vec<b256>
 }
 
 struct VoteCast {
     voter: Identity,
     proposal_id: u64,
     support: u8,
-    reason: string
+    reason: Vec<b256>
 }
 
 struct ProposalCanceled {
-    proposal_id: u64
+    proposal_id: u64,
 }
 
 struct ProposalExecuted {
-    proposal_id: u64
+    proposal_id: u64,
 }
 
 abi Governor {
@@ -53,22 +70,27 @@ abi Governor {
     #[storage(read)]fn get_supply_checkpoint(block: u64) -> u64;
     #[storage(read)]fn get_voting_power(block: u64, of: Identity) -> u64;
 
-    #[storage(read)]fn get_state(proposal_id: u64) -> ProposalState;
-    #[storage(read)]fn get_proposal_snapshot(proposal_id: u64) -> u64;
-    #[storage(read)]fn get_proposal_deadline(proposal_id: u64) -> u64;
+    #[storage(read)]fn get_state(proposal_id: b256) -> ProposalState;
+    #[storage(read)]fn get_proposal_snapshot(proposal_id: b256) -> u64;
+    #[storage(read)]fn get_proposal_deadline(proposal_id: b256) -> u64;
     #[storage(read)]fn get_voting_delay() -> u64;
     #[storage(read)]fn get_voring_period() -> u64;
     #[storage(read)]fn get_quorum() -> u64;
     #[storage(read)]fn has_voted(account: Identity) -> bool;
-    #[storage(read, write)]fn propose() -> u64;
-    #[storage(read, write)]fn execute() -> u64;
-    #[storage(read, write)]fn cast_vote(proposal_id: u64, support: u8) -> u64;
-    #[storage(read, write)]fn cast_vote_with_reason(proposal_id: u64, support: u8, reason: string) -> u64;
+    #[storage(read, write)]fn propose(description: str[10]) -> b256;
+    #[storage(read, write)]fn execute() -> b256;
+    #[storage(read, write)]fn cast_vote(proposal_id: b256, support: u8) -> b256;
+    // #[storage(read, write)]fn cast_vote_with_reason(proposal_id: u64, support: u8, reason: string) -> u64;
 }
 
 storage {
     contract_id: ContractId,
+    proposals: StorageMap<b256,
+    Proposal>, quorum: u64,
+    voting_period: u64,
+    voting_delay: u64,
 }
+
 impl Governor for Contract {
     #[storage(read, write)]pub fn mint(to: Identity, amount: u64) {
         _mint(to, amount);
@@ -102,26 +124,79 @@ impl Governor for Contract {
         _get_voting_power(block, of)
     }
 
-    #[storage(read)]fn get_state(proposal_id: u64) -> ProposalState {
+    #[storage(read)]pub fn get_state(proposal_id: b256) -> ProposalState {
+        let proposal: Proposal = storage.proposals.get(proposal_id);
+
+        if (proposal.executed) {
+            return ProposalState::Executed();
+        }
+
+        if (proposal.canceled) {
+            return ProposalState::Canceled();
+        }
+
+        let snapshot_block = storage.proposals.get(proposal_id).vote_start;
+        require(snapshot_block != 0, "unknown prop");
+        if (snapshot_block > height()) {
+            return ProposalState::Pending();
+        }
+
+        let deadline = storage.proposals.get(proposal_id).vote_end;
+        if (deadline >= height()) {
+            return ProposalState::Active();
+        }
+
+        if (quorum_reached(proposal_id) && vote_succeeded(proposal_id)) {
+            return ProposalState::Succeeded();
+        } else {
+            return ProposalState::Defeated();
+        }
     }
-    #[storage(read)]fn get_proposal_snapshot(proposal_id: u64) -> u64 {
+
+    #[storage(read)]pub fn get_proposal_snapshot(proposal_id: b256) -> u64 {
+        storage.proposals.get(proposal_id).vote_start
     }
-    #[storage(read)]fn get_proposal_deadline(proposal_id: u64) -> u64 {
+    #[storage(read)]pub fn get_proposal_deadline(proposal_id: b256) -> u64 {
+        storage.proposals.get(proposal_id).vote_end
     }
     #[storage(read)]fn get_voting_delay() -> u64 {
+        storage.voting_delay
     }
     #[storage(read)]fn get_voring_period() -> u64 {
+        storage.voting_period
     }
     #[storage(read)]fn get_quorum() -> u64 {
+        storage.quorum
     }
     #[storage(read)]fn has_voted(account: Identity) -> bool {
+        false
     }
-    #[storage(read, write)]fn propose() -> u64 {
+    // need dynamic strings
+    #[storage(read, write)]fn propose(description: str[10]) -> b256 {
+        let prop_hash = sha256(description);
+        let proposal = Proposal {
+            vote_start: height() + storage.voting_delay,
+            vote_end: height() + storage.voting_delay + storage.voting_period,
+            executed: false,
+            canceled: false,
+        };
+        storage.proposals.insert(prop_hash, proposal);
+        prop_hash
     }
-    #[storage(read, write)]fn execute() -> u64 {
+    #[storage(read, write)]fn execute() -> b256 {
+        0x0000000000000000000000000000000000000000000000000000000000000000 // TODO
     }
-    #[storage(read, write)]fn cast_vote(proposal_id: u64, support: u8) -> u64 {
+    #[storage(read, write)]fn cast_vote(proposal_id: b256, support: u8) -> b256 {
+        0x0000000000000000000000000000000000000000000000000000000000000000 // TODO
     }
-    #[storage(read, write)]fn cast_vote_with_reason(proposal_id: u64, support: u8, reason: string) -> u64 {
-    }
+    // #[storage(read, write)]fn cast_vote_with_reason(proposal_id: u64, support: u8, reason: string) -> u64 {
+    // }
+}
+/// internal functions
+fn quorum_reached(proposal_id: b256) -> bool {
+    false
+}
+
+fn vote_succeeded(proposal_id: b256) -> bool {
+    false
 }
