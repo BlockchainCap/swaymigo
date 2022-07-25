@@ -3,7 +3,7 @@ use swaymigo::token::vault::*;
 use std::{assert::*, context::call_frames::*, address::Address, contract_id::ContractId, identity::Identity, token::*, context::*};
 
 storage {
-    asset_id: b256,
+    asset_id: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000,
 }
 
 abi VaultTest {

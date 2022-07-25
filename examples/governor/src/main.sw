@@ -169,9 +169,10 @@ impl Governor for Contract {
         storage.quorum
     }
     #[storage(read)]fn has_voted(account: Identity) -> bool {
+        // TODO 
         false
     }
-    // need dynamic strings
+    // TODO: need dynamic strings or alternatively just use bytes 
     #[storage(read, write)]fn propose(description: str[10]) -> b256 {
         let prop_hash = sha256(description);
         let proposal = Proposal {
@@ -194,9 +195,11 @@ impl Governor for Contract {
 }
 /// internal functions
 fn quorum_reached(proposal_id: b256) -> bool {
+    // TODO 
     false
 }
 
 fn vote_succeeded(proposal_id: b256) -> bool {
+    // TODO 
     false
 }
