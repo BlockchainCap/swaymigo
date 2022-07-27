@@ -84,11 +84,11 @@ abi Governor {
 }
 
 storage {
-    contract_id: ContractId,
-    proposals: StorageMap<b256,
-    Proposal>, quorum: u64,
-    voting_period: u64,
-    voting_delay: u64,
+    contract_id: ContractId = ~ContractId::from(0x0000000000000000000000000000000000000000000000000000000000000000),
+    proposals: StorageMap<b256, Proposal> = StorageMap{},
+    quorum: u64 = 0,
+    voting_period: u64 = 0,
+    voting_delay: u64 = 0
 }
 
 impl Governor for Contract {
