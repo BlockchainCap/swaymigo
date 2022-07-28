@@ -53,13 +53,16 @@ enum Error {
 
 // receive shares, return the locked asset
 #[storage(read, write)]pub fn withdraw(receiver: Identity, asset_id: ContractId) {
-    require(msg_asset_id().into() == (contract_id()).into(), Error::IncorrectAsset);
+    // TODO: require not available in this scope? 
+    // require(msg_asset_id().into() == (contract_id()).into(), Error::IncorrectAsset);
+    assert(msg_asset_id().into() == (contract_id()).into());
     assert(msg_amount() > 0); 
     let shares = msg_amount();
     let caller = get_msg_sender_id_or_panic(msg_sender());
     // shares is the proportion of the pool that is owned based on current supply
     let assets = get_assets_from_shares(shares, asset_id);
-    require(assets > 0, Error::InsuffienctShares);
+    // require(assets > 0, Error::InsuffienctShares);
+    assert(assets > 0); 
     transfer(assets, asset_id, receiver);
     burn(shares);
     temp_set_share_supply(temp_get_share_supply() - shares);
