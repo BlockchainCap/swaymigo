@@ -136,7 +136,8 @@ impl Governor for Contract {
         }
 
         let snapshot_block = storage.proposals.get(proposal_id).vote_start;
-        require(snapshot_block != 0, "unknown prop");
+        // require(snapshot_block != 0, "unknown prop");
+        assert(snapshot_block != 0);
         if (snapshot_block > height()) {
             return ProposalState::Pending();
         }
