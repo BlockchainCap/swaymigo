@@ -30,6 +30,4 @@ async fn test_get_asset_id() {
     // need to mint some beans 
     let mint_tx=_instance.mint(governor_mod::Identity::Address(wallet.address()), 100).call().await;
     assert!(!mint_tx.is_err());
-
-    
 }
