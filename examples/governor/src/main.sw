@@ -90,8 +90,8 @@ struct ProposalExecuted {
 }
 
 abi Governor {
-    #[storage(read, write)]pub fn mint(to: Identity, amount: u64);
-    #[storage(read, write)]pub fn burn(from: Identity, amount: u64);
+    #[storage(read, write)]fn mint(to: Identity, amount: u64);
+    #[storage(read, write)]fn burn(from: Identity, amount: u64);
     #[storage(write)]fn set_vote_asset(contract_id: ContractId);
     #[storage(read)]fn get_vote_asset() -> ContractId;
     #[storage(read, write)]fn transfer(from: Identity, to: Identity, amount: u64);
@@ -125,46 +125,46 @@ storage {
 }
 
 impl Governor for Contract {
-    #[storage(read, write)]pub fn mint(to: Identity, amount: u64) {
+    #[storage(read, write)]fn mint(to: Identity, amount: u64) {
         _mint(to, amount);
     }
 
-    #[storage(read, write)]pub fn burn(from: Identity, amount: u64) {
+    #[storage(read, write)]fn burn(from: Identity, amount: u64) {
         _burn(from, amount);
     }
 
-    #[storage(write)]pub fn set_vote_asset(contract_id: ContractId) {
+    #[storage(write)]fn set_vote_asset(contract_id: ContractId) {
         storage.contract_id = contract_id;
     }
 
-    #[storage(read)]pub fn get_vote_asset() -> ContractId {
+    #[storage(read)]fn get_vote_asset() -> ContractId {
         return storage.contract_id;
     }
 
-    #[storage(read, write)]pub fn transfer(from: Identity, to: Identity, amount: u64) {
+    #[storage(read, write)]fn transfer(from: Identity, to: Identity, amount: u64) {
         _transfer(from, to, amount);
     }
 
-    #[storage(read, write)]pub fn delegate(from: Identity, to: Identity, amount: u64) {
+    #[storage(read, write)]fn delegate(from: Identity, to: Identity, amount: u64) {
         _delegate(from, to, amount);
     }
 
-    #[storage(read)]pub fn get_supply_checkpoint(block: u64) -> u64 {
+    #[storage(read)]fn get_supply_checkpoint(block: u64) -> u64 {
         _get_supply_checkpoint(block)
     }
 
-    #[storage(read)]pub fn get_voting_power(block: u64, of: Identity) -> u64 {
+    #[storage(read)]fn get_voting_power(block: u64, of: Identity) -> u64 {
         _get_voting_power(block, of)
     }
 
-    #[storage(read)]pub fn get_state(proposal_id: b256) -> ProposalState {
+    #[storage(read)]fn get_state(proposal_id: b256) -> ProposalState {
         _get_state(proposal_id)
     }
 
-    #[storage(read)]pub fn get_proposal_snapshot(proposal_id: b256) -> u64 {
+    #[storage(read)]fn get_proposal_snapshot(proposal_id: b256) -> u64 {
         storage.proposals.get(proposal_id).vote_start
     }
-    #[storage(read)]pub fn get_proposal_deadline(proposal_id: b256) -> u64 {
+    #[storage(read)]fn get_proposal_deadline(proposal_id: b256) -> u64 {
         storage.proposals.get(proposal_id).vote_end
     }
     #[storage(read)]fn get_voting_delay() -> u64 {
