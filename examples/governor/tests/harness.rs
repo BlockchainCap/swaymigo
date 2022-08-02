@@ -17,17 +17,10 @@ async fn get_contract_instance() -> (Governor, ContractId) {
 }
 
 #[tokio::test]
-async fn test_get_asset_id() {
+async fn create_proposal() {
     let (_instance, _id) = get_contract_instance().await;
-    let set_asset_tx = _instance.set_vote_asset(_id).call().await;
-    assert!(!set_asset_tx.is_err());
-    let get_asset_tx = _instance.get_vote_asset().call().await;
-    assert!(!get_asset_tx.is_err());
-    assert_eq!(get_asset_tx.unwrap().value, _id);
-
-    // set up a new wallet 
     let wallet = LocalWallet::new_random(None);
-    // need to mint some beans 
-    let mint_tx=_instance.mint(governor_mod::Identity::Address(wallet.address()), 100).call().await;
-    assert!(!mint_tx.is_err());
+    let mint_tx = _instance.mint_a(wallet.address(), 100);
+
+
 }
