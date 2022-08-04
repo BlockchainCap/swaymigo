@@ -2,7 +2,7 @@
 Example implementation for a governance style contract.
 
 ### To run tests: 
-```rust    
+```bash
 forc build 
 forc test 
 ```
