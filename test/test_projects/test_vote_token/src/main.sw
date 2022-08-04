@@ -51,11 +51,4 @@ impl VoteToken for Contract {
     fn blocknumber() -> u64 {
         height()
     }
-    // fn checkpt(index: u64) -> Checkpoint {
-    //     temp_get_total_supply_snapshot(index)
-    // }
-
-    // fn get_sup_count() -> u64 {
-    //     temp_get_total_supply_count()
-    // }
 }

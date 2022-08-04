@@ -75,7 +75,7 @@ enum Error {
 #[storage(read, write)]pub fn transfer(from: Identity, to: Identity, id: u64) {
     let current_owner = owner_of(id);
     let sender = get_msg_sender_id_or_panic(msg_sender());
-    // require(from == sender, Error::NotOwner());
+    require(from == sender, Error::NotOwner());
     require(current_owner == from, Error::NotOwner());
     temp_balance_insert(from, balance_of(from) - 1);
     temp_balance_insert(to, balance_of(to) + 1);

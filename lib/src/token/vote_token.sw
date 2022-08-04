@@ -156,7 +156,7 @@ pub fn delegate(from: Identity, to: Identity, amount: u64) {
 
 #[storage(read)]
 pub fn get_supply_checkpoint(block: u64) -> u64 {
-    assert(block < height());
+    assert(block <= height());
     let mut high = temp_get_total_supply_count();
     let mut low = 0;
     while low < high {
@@ -179,7 +179,7 @@ pub fn get_supply_checkpoint(block: u64) -> u64 {
 // TODO: lots of duplicated code here, should make generic binary search
 #[storage(read)]
 pub fn get_voting_power(block: u64, of: Identity) -> u64 {
-    assert(block < height());
+    assert(block <= height());
     let mut high = temp_get_voter_checkpoint_count(of);
     let mut low = 0;
     while low < high {

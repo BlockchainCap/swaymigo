@@ -82,10 +82,8 @@ struct ProposalExecuted {
 }
 
 abi Governor {
-    #[storage(read, write)]fn mint_a(to: Address, amount: u64);
-    #[storage(read, write)]fn mint_c(to: ContractId, amount: u64);
-    #[storage(read, write)]fn burn_a(from: Address, amount: u64);
-    #[storage(read, write)]fn burn_c(from: ContractId, amount: u64);
+    #[storage(read, write)]fn mint(to: Identity, amount: u64);
+    #[storage(read, write)]fn burn(from: Identity, amount: u64);
     #[storage(write)]fn set_vote_asset(contract_id: ContractId);
     #[storage(read)]fn get_vote_asset() -> ContractId;
     #[storage(read, write)]fn transfer(from: Address, to: Address, amount: u64);
@@ -99,6 +97,10 @@ abi Governor {
     #[storage(read)]fn get_voting_delay() -> u64;
     #[storage(read)]fn get_voting_period() -> u64;
     #[storage(read)]fn get_quorum() -> u64;
+    #[storage(read)]fn get_total_voted(proposal_id: b256) -> u64;
+    #[storage(write)]fn set_voting_delay(vd: u64);
+    #[storage(write)]fn set_voting_period(vp: u64);
+    #[storage(write)]fn set_quorum(quorum: u64);
     #[storage(read)]fn has_voted(proposal_id: b256, account: Identity) -> bool;
     #[storage(read, write)]fn propose(description: str[10]) -> b256;
     #[storage(read, write)]fn execute(proposal_id: b256) -> b256;
@@ -123,20 +125,12 @@ storage {
 }
 
 impl Governor for Contract {
-    #[storage(read, write)]fn mint_a(to: Address, amount: u64) {
-        _mint(Identity::Address(to), amount);
+    #[storage(read, write)]fn mint(to: Identity, amount: u64) {
+        _mint(to, amount);
     }
 
-    #[storage(read, write)]fn mint_c(to: ContractId, amount: u64) {
-        _mint(Identity::ContractId(to), amount);
-    }
-
-    #[storage(read, write)]fn burn_a(from: Address, amount: u64) {
-        _burn(Identity::Address(from), amount);
-    }
-
-    #[storage(read, write)]fn burn_c(from: ContractId, amount: u64) {
-        _burn(Identity::ContractId(from), amount);
+    #[storage(read, write)]fn burn(from: Identity, amount: u64) {
+        _burn(from, amount);
     }
 
     #[storage(write)]fn set_vote_asset(contract_id: ContractId) {
@@ -170,22 +164,45 @@ impl Governor for Contract {
     #[storage(read)]fn get_proposal_snapshot(proposal_id: b256) -> u64 {
         storage.proposals.get(proposal_id).vote_start
     }
+    
     #[storage(read)]fn get_proposal_deadline(proposal_id: b256) -> u64 {
         storage.proposals.get(proposal_id).vote_end
     }
+
     #[storage(read)]fn get_voting_delay() -> u64 {
         storage.voting_delay
     }
+
     #[storage(read)]fn get_voting_period() -> u64 {
         storage.voting_period
     }
+
     #[storage(read)]fn get_quorum() -> u64 {
         storage.quorum
     }
+
+    // CONFIG SET -- should be restricted auth
+    #[storage(write)]fn set_voting_delay(vd: u64) {
+        storage.voting_delay = vd;
+    }
+
+    #[storage(write)]fn set_voting_period(vp: u64) {
+        storage.voting_period = vp;
+    }
+
+    #[storage(write)]fn set_quorum(quorum: u64) {
+        storage.quorum = quorum;
+    }
+
+    #[storage(read)] fn get_total_voted(proposal_id: b256) -> u64 {
+        _get_total_voted(proposal_id)
+    }
+
     #[storage(read)]fn has_voted(proposal_id: b256, account: Identity) -> bool {
         let vote_id = sha256((proposal_id, account));
         storage.has_voted.get(vote_id)
     }
+
     // TODO: need dynamic strings or alternatively just use bytes
     #[storage(read, write)]fn propose(description: str[10]) -> b256 {
         let prop_hash = sha256(description);
@@ -208,28 +225,38 @@ impl Governor for Contract {
         // TODO: There is a whole bunch missing to make this work, we need to delegate a
         // call to another contract and the proposal itself should have the transaction basically
         // fully constructed
+        let state = _get_state(proposal_id);
+        assert(state == ProposalState::Succeeded());
+         // DO EXECUTION 
+        let mut proposal = storage.proposals.get(proposal_id);
+        proposal.executed = true;
+        storage.proposals.insert(proposal_id, proposal);
         log(ProposalExecuted {
             proposal_id: proposal_id
         });
         proposal_id
     }
+
     #[storage(read, write)]fn cast_vote(proposal_id: b256, support: u8) -> u64 {
         let proposal = storage.proposals.get(proposal_id);
         assert(_get_state(proposal_id) == ProposalState::Active());
 
         let voter = get_msg_sender_id_or_panic(msg_sender());
         let weight = _get_voting_power(proposal.vote_start, voter);
-
+        assert(weight > 0);
         count_vote(proposal_id, voter, support, weight);
         log(VoteCast {
             voter: voter, proposal_id: proposal_id, support: support, weight: weight
         });
         weight
     }
+
     // #[storage(read, write)]fn cast_vote_with_reason(proposal_id: u64, support: u8, reason: string) -> u64 {
+    //     // TODO 
+    //     revert(0);
     // }
 }
-
+   
 #[storage(read, write)]fn count_vote(proposal_id: b256, voter: Identity, support: u8, weight: u64) {
     let proposal_vote = storage.proposal_votes.get(proposal_id);
     let vote_id = sha256((proposal_id, voter));
@@ -256,14 +283,21 @@ impl Governor for Contract {
     }
 }
 /// internal functions
-fn quorum_reached(proposal_id: b256) -> bool {
-    // TODO
-    false
+#[storage(read)]fn quorum_reached(proposal_id: b256) -> bool {
+    let total_votes = _get_total_voted(proposal_id);
+    return total_votes >= storage.quorum;
 }
 
-fn vote_succeeded(proposal_id: b256) -> bool {
-    // TODO
-    false
+#[storage(read)]fn vote_succeeded(proposal_id: b256) -> bool {
+    let votes = storage.proposal_votes.get(proposal_id);
+    let non_yes = votes.votes_against + votes.votes_abstain;
+    // this is simple majority, probably want more expressiveness here
+    return votes.votes_for > non_yes;
+}
+#[storage(read)] fn _get_total_voted(proposal_id: b256) -> u64 {
+    let votes = storage.proposal_votes.get(proposal_id);
+    let total_votes = votes.votes_for + votes.votes_against + votes.votes_abstain;
+    total_votes
 }
 
 #[storage(read)]fn _get_state(proposal_id: b256) -> ProposalState {
