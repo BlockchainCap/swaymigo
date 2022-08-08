@@ -28,6 +28,7 @@ cargo test
 
 ## Auth
 - [x] Sender - helper to get the msg.sender or revert
+- [x] Null Address - Constant getter for 0 address.
 - [ ] Ownership - not yet implemented
 
 # Known Issues
@@ -35,6 +36,7 @@ Sway is nascent. There are missing features and some lack of cleanliness. For no
 Workarounds/hacks include: 
 - Manual storage manipulation in libraries because `storage` keyword and `StorageMap` are not yet supported in libraries
 - FuelVM native asset system not being utilized in fungible tokens. 
+- Delegation is not handled completely in vote token
 - Test coverage is pretty weak
 
 # Contribution Guide
