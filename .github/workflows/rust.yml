@@ -15,8 +15,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: ./.github/setup-rust
     - uses: actions/checkout@v3
+    - uses: ./.github/setup-rust
     - name: Build swaymigo
       run: |
         cd test
