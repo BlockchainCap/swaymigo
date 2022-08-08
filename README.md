@@ -43,5 +43,5 @@ Workarounds/hacks include:
 `// TODO` 
 
 # Disclaimer
-Current iteration of contracts written here are un-audited and are presented for demonstration purposes only. These contracts are not considered production ready. If you or your team is looking to build a Fuel application using the swaymigo library, reach out to ryan@blockchaincapital.com
+The current iteration of contracts written here are un-audited and are presented for demonstration purposes only. These contracts are not considered production ready. If you or your team is looking to build a Fuel application using the swaymigo library, reach out to ryan@blockchaincapital.com.
 
