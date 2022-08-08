@@ -1,17 +1,16 @@
 # Swaymigo 
-Some common building blocks for Sway smart contracts in the FuelVM.
+Some common building blocks for Sway smart contracts in the FuelVM. While the fuel team maintains the sway standard library, there are some use cases that they have not implemented and may never implement. This library give the opportunity for the community to build more experimental and custom building blocks and still have th ability to share them across the ecosystem.
 
 
+# Run the swaymigo test suite 
 
-## To run the swaymigo test suite 
-
-Build the test harness under `test/`. Run: 
+Build the full library with the script under `test/`. Run: 
 ``` sh
 cd test
 ./build.sh
 ```
 
-Run the tests after the tests have been built successfuly: 
+Run the tests after the library has been built successfuly: 
 ``` sh 
 cargo test 
 ```
@@ -34,10 +33,12 @@ cargo test
 # Known Issues
 Sway is nascent. There are missing features and some lack of cleanliness. For now this contracts work around these issues to the best of our ability. Expect the contracts to evolve over time as the language itself evolves.
 Workarounds/hacks include: 
-- Manual storage manipulation in libraries because `storage` keyword and StorageMap not yet supported in libs
-- Low level asset manipulation not being utilized 
+- Manual storage manipulation in libraries because `storage` keyword and `StorageMap` are not yet supported in libraries
+- FuelVM native asset system not being utilized in fungible tokens. 
 - Test coverage is pretty weak
 
+# Contribution Guide
+`// TODO` 
 
 # Disclaimer
 Current iteration of contracts written here are un-audited and are presented for demonstration purposes only. These contracts are not considered production ready. If you or your team is looking to build a Fuel application using the swaymigo library, reach out to ryan@blockchaincapital.com
