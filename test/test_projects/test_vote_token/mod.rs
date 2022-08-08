@@ -1,5 +1,4 @@
 use fuels::{prelude::*, tx::ContractId};
-use fuels_abigen_macro::abigen;
 
 // Load abi from json
 abigen!(
@@ -9,26 +8,27 @@ abigen!(
 
 async fn get_contract_instance() -> (VoteToken, ContractId) {
     // Launch a local network and deploy the contract
-    let wallet = launch_provider_and_get_single_wallet().await;
+    let wallet = launch_provider_and_get_wallet().await;
 
     let id = Contract::deploy(
         "test_projects/test_vote_token/out/debug/test_vote_token.bin",
         &wallet,
         TxParameters::default(),
+        StorageConfiguration::default(),
     )
     .await
     .unwrap();
 
-    let instance = VoteToken::new(id.to_string(), wallet);
+    let instance = VoteTokenBuilder::new(id.to_string(), wallet).build();
 
-    (instance, id)
+    (instance, id.into())
 }
 
 #[tokio::test]
 async fn test_snapshots_full() {
     let (_instance, _id) = get_contract_instance().await;
-    let receiver = LocalWallet::new_random(None).address();
-    let garb = LocalWallet::new_random(None).address();
+    let receiver = LocalWallet::new_random(None).address().into();
+    let garb = LocalWallet::new_random(None).address().into();
 
     let mint_tx = _instance._mint(receiver, 100).call().await;
     let post_mint_block = _instance.blocknumber().call().await.unwrap().value;
@@ -84,7 +84,7 @@ async fn test_snapshots_full() {
 #[tokio::test]
 async fn should_fail_block_not_mined() {
     let (_instance, _id) = get_contract_instance().await;
-    let receiver = LocalWallet::new_random(None).address();
+    let receiver = LocalWallet::new_random(None).address().into();
     let attempt_get_future_block = _instance._get_voting_power(100, receiver).call().await;
     assert!(attempt_get_future_block.is_err());
     let attempt_get_future_block_supply = _instance._get_supply_checkpoint(100).call().await;

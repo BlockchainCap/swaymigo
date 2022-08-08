@@ -1,6 +1,4 @@
 use fuels::{prelude::*, tx::ContractId};
-use fuels_abigen_macro::abigen;
-// use sha2::{Digest, Sha256};
 
 // Load abi from json
 abigen!(
@@ -10,19 +8,20 @@ abigen!(
 
 async fn get_contract_instance() -> (MerkleProofTestContract, ContractId) {
     // Launch a local network and deploy the contract
-    let wallet = launch_provider_and_get_single_wallet().await;
+    let wallet = launch_provider_and_get_wallet().await;
 
     let id = Contract::deploy(
         "test_projects/test_merkle_proof/out/debug/test_merkle_proof.bin",
         &wallet,
         TxParameters::default(),
+        StorageConfiguration::default(),
     )
     .await
     .unwrap();
 
-    let instance = MerkleProofTestContract::new(id.to_string(), wallet);
+    let instance = MerkleProofTestContractBuilder::new(id.to_string(), wallet).build();
 
-    (instance, id)
+    (instance, id.into())
 }
 
 #[tokio::test]

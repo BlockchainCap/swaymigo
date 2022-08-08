@@ -3,7 +3,7 @@ use fuels::{prelude::*, signers::wallet::Wallet};
 // Load abi from json
 abigen!(Governor, "out/debug/governor-abi.json");
 
-async fn get_contract_instance() -> (Governor, Bech32ContractId, Wallet) {
+async fn get_contract_instance() -> (Governor, ContractId, Wallet) {
     // Launch a local network and deploy the contract
     let wallet = launch_provider_and_get_wallet().await;
 
@@ -23,7 +23,7 @@ async fn get_contract_instance() -> (Governor, Bech32ContractId, Wallet) {
     let _ = instance.set_voting_delay(3).call().await;
     let _ = instance.set_quorum(1).call().await;
 
-    (instance, id, wallet)
+    (instance, id.into(), wallet)
 }
 
 #[tokio::test]
