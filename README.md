@@ -17,7 +17,7 @@ cargo test
 
 # Currently available
 ### Tokens
-- [x] Fungible Token - A ledger based erc20 style token implementation. This does not take advantage of the FuelVM internal asset management system. This might be useful for scenario where the ledger state is an important part of the wrapper contracts implementation. For example a vote token that needs historical snapshots of the ledger state for each voter. 
+- [x] Fungible Token - A ledger based erc20 style token implementation. This does not take advantage of the FuelVM internal asset management system. This might be useful for scenario where the ledger state is an important part of the wrapper contract's implementation. For example, a vote token that needs the ability to lookup historical snapshots of the ledger state for each voter within the contract. 
 - [x] Non-fungible token - A simple library that implements the ERC721 standard
 - [x] Vote token - A snapshotting token that allows for historical balance look ups based on block number. This is good for a governance use case. 
 - [x] Wrapper Token - A ledger based token wrapper for native assets. Good if you want to give snapshotting functionality to a native asset. 
@@ -29,7 +29,7 @@ cargo test
 ## Auth
 - [x] Sender - helper to get the msg.sender or revert
 - [x] Null Address - Constant getter for 0 address.
-- [ ] Ownership - not yet implemented
+- [ ] Ownership - not yet implemented. Role based protection on contract functions. 
 
 # Known Issues
 Sway is nascent. There are missing features and some lack of cleanliness. For now this contracts work around these issues to the best of our ability. Expect the contracts to evolve over time as the language itself evolves.
