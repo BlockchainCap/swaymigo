@@ -1,6 +1,6 @@
 contract;
 
-use std::{contract_id::ContractId, address::Address, token::{burn, transfer_to_output, mint}};
+use std::{address::Address, contract_id::ContractId, token::{burn, mint, transfer_to_output}};
 
 abi BasicToken {
     fn mint(mint_amount: u64);

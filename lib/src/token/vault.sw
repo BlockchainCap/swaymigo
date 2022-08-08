@@ -31,7 +31,7 @@ struct Withdraw {
 
 enum Error {
     IncorrectAsset: (),
-    InsuffienctShares: ()
+    InsuffienctShares: (),
 }
 
 // receive asset, mint the shares
@@ -43,7 +43,7 @@ enum Error {
     let shares = get_shares_from_assets(assets, msg_asset_id());
     assert(shares > 0);
     // TEST: I think this is unnessesary
-    // transfer(assets, msg_asset_id(), Identity::ContractId(contract_id())); // should happen auto 
+    // transfer(assets, msg_asset_id(), Identity::ContractId(contract_id())); // should happen auto
     mint_to(shares, receiver);
     temp_set_share_supply(temp_get_share_supply() + shares);
     log(Deposit {
@@ -53,16 +53,16 @@ enum Error {
 
 // receive shares, return the locked asset
 #[storage(read, write)]pub fn withdraw(receiver: Identity, asset_id: ContractId) {
-    // TODO: require not available in this scope? 
+    // TODO: require not available in this scope?
     // require(msg_asset_id().into() == (contract_id()).into(), Error::IncorrectAsset);
     assert(msg_asset_id().into() == (contract_id()).into());
-    assert(msg_amount() > 0); 
+    assert(msg_amount() > 0);
     let shares = msg_amount();
     let caller = get_msg_sender_id_or_panic(msg_sender());
     // shares is the proportion of the pool that is owned based on current supply
     let assets = get_assets_from_shares(shares, asset_id);
     // require(assets > 0, Error::InsuffienctShares);
-    assert(assets > 0); 
+    assert(assets > 0);
     transfer(assets, asset_id, receiver);
     burn(shares);
     temp_set_share_supply(temp_get_share_supply() - shares);
@@ -72,8 +72,7 @@ enum Error {
 }
 
 //// Internals
-#[storage(read)]
-fn get_shares_from_assets(assets: u64, asset_id: ContractId) -> u64 {
+#[storage(read)]fn get_shares_from_assets(assets: u64, asset_id: ContractId) -> u64 {
     // total assets locked is the balance of the contact
     let locked_amount = this_balance(asset_id); // CHECK: does this get incremented BEFORE the contract logic or AFTER
     // is there a way to query the total shares supply... for now store in contract storage
@@ -88,8 +87,7 @@ fn get_shares_from_assets(assets: u64, asset_id: ContractId) -> u64 {
     }
 }
 
-#[storage(read)]
-fn get_assets_from_shares(shares: u64, asset_id: ContractId) -> u64 {
+#[storage(read)]fn get_assets_from_shares(shares: u64, asset_id: ContractId) -> u64 {
     // total assets locked is the balance of the contact
     let locked_amount = this_balance(asset_id); // CHECK: does this get incremented BEFORE the contract logic or AFTER
     // user should get a number of shares that is proportional to the
