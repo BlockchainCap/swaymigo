@@ -1,5 +1,5 @@
 # Swaymigo 
-Some common building blocks for Sway smart contracts in the FuelVM. While the fuel team maintains the sway standard library, there are some use cases that they have not implemented and may never implement. This library give the opportunity for the community to build more experimental and custom building blocks and still have th ability to share them across the ecosystem.
+Some common building blocks for Sway smart contracts in the FuelVM. While the fuel team maintains the sway standard library, there are some use cases that they have not implemented and may never implement. This library give the opportunity for the community to build more experimental and custom building blocks and still have the ability to share them across the ecosystem.
 
 
 # Run the swaymigo test suite 
