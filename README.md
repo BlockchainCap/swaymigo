@@ -14,7 +14,32 @@ Run the tests after the library has been built successfuly:
 ``` sh 
 cargo test 
 ```
-
+# Repository Structure
+```
+lib
+└── src
+    ├── auth
+    │   ├── get_sender.sw
+    │   └── get_zero_address.sw
+    ├── auth.sw
+    ├── lib.sw
+    ├── token
+    │   ├── ledger_fungible_token.sw
+    │   ├── non_fungible_token.sw
+    │   ├── strict_token.sw
+    │   ├── vault.sw
+    │   ├── vote_token.sw
+    │   └── wrapped_asset.sw
+    ├── token.sw
+    ├── utils
+    │   ├── merkle_proof.sw
+    │   └── strings.sw
+    └── utils.sw
+test
+├── build.sh <-- the script to build all the test projects
+└── test_projects
+    --> a bunch of example projects that use the swaymigo library
+```
 # Currently available
 ### Tokens
 - [x] Fungible Token - A ledger based erc20 style token implementation. This does not take advantage of the FuelVM internal asset management system. This might be useful for scenario where the ledger state is an important part of the wrapper contract's implementation. For example, a vote token that needs the ability to lookup historical snapshots of the ledger state for each voter within the contract. 
