@@ -5,24 +5,20 @@ use std::{hash::*, identity::Identity, logging::*, revert::*, storage::*};
 const SUPPLY_BALANCE: b256 = 0x00000000000000000000000000000000000000000000000000000000aaaaaba1;
 const BALANCE_SALT: b256 = 0x0000000000000000000000000000000000000000000000000000000000000ba1;
 
-#[storage(read)]
-fn temp_get_supply() -> u64 {
+#[storage(read)]fn temp_get_supply() -> u64 {
     get::<u64>(SUPPLY_BALANCE)
 }
 
-#[storage(write)]
-fn temp_set_supply(s: u64) {
+#[storage(write)]fn temp_set_supply(s: u64) {
     store::<u64>(SUPPLY_BALANCE, s)
 }
 
-#[storage(write)]
-fn temp_balance_insert(key: Identity, val: u64) {
+#[storage(write)]fn temp_balance_insert(key: Identity, val: u64) {
     let slot = sha256((BALANCE_SALT, key));
     store::<u64>(slot, val);
 }
 
-#[storage(read)]
-fn temp_balance_get(key: Identity) -> u64 {
+#[storage(read)]fn temp_balance_get(key: Identity) -> u64 {
     let slot = sha256((BALANCE_SALT, key));
     get::<u64>(slot)
 }
@@ -41,8 +37,7 @@ struct Transfer {
     amount: u64,
 }
 
-#[storage(read, write)]
-pub fn mint_tokens(to: Identity, mint_amount: u64) {
+#[storage(read, write)]pub fn mint_tokens(to: Identity, mint_amount: u64) {
     // storage.supply = storage.supply + mint_amount;
     temp_set_supply(temp_get_supply() + mint_amount);
     let curr_balance = get_balance(to);
@@ -53,8 +48,7 @@ pub fn mint_tokens(to: Identity, mint_amount: u64) {
     });
 }
 
-#[storage(read, write)]
-pub fn burn_tokens(from: Identity, burn_amount: u64) {
+#[storage(read, write)]pub fn burn_tokens(from: Identity, burn_amount: u64) {
     let curr_balance = get_balance(from);
     if burn_amount > curr_balance {
         revert(0);
@@ -68,9 +62,7 @@ pub fn burn_tokens(from: Identity, burn_amount: u64) {
     });
 }
 
-// TODO convert to use the Identity pattern from the std lib
-#[storage(read, write)]
-pub fn f_transfer(from: Identity, to: Identity, amount: u64) {
+#[storage(read, write)]pub fn f_transfer(from: Identity, to: Identity, amount: u64) {
     if get_balance(from) >= amount {
         let sender_pre_balance = get_balance(from);
         let receiver_pre_balance = get_balance(to);
@@ -86,12 +78,10 @@ pub fn f_transfer(from: Identity, to: Identity, amount: u64) {
     });
 }
 
-#[storage(read)]
-pub fn get_balance(of: Identity) -> u64 {
+#[storage(read)]pub fn get_balance(of: Identity) -> u64 {
     return temp_balance_get(of);
 }
 
-#[storage(read)]
-pub fn get_total_supply() -> u64 {
+#[storage(read)]pub fn get_total_supply() -> u64 {
     return temp_get_supply()
 }

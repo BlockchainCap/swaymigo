@@ -13,6 +13,7 @@ use std::{
 use ::auth::zero_address::get_zero_address;
 use ::auth::sender::*;
 
+// TODO: Upgrade to storage keyword when available
 // storage {
 //     supply: u64,
 //     // balances: StorageMap<Identity, u64>,
