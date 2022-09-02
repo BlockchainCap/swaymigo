@@ -1,9 +1,9 @@
-use fuels::{prelude::*, signers::wallet::Wallet};
+use fuels::{prelude::*};
 
 // Load abi from json
-abigen!(Governor, "out/debug/governor-abi.json");
+abigen!(Governor, "out/debug/governor-flat-abi.json");
 
-async fn get_contract_instance() -> (Governor, ContractId, Wallet) {
+async fn get_contract_instance() -> (Governor, ContractId, WalletUnlocked) {
     // Launch a local network and deploy the contract
     let wallet = launch_provider_and_get_wallet().await;
 
@@ -29,7 +29,7 @@ async fn get_contract_instance() -> (Governor, ContractId, Wallet) {
 #[tokio::test]
 async fn create_proposal() {
     let (_instance, _id, deployer) = get_contract_instance().await;
-    // let wallet = LocalWallet::new_random(None);
+    // let wallet = WalletUnlocked::new_random(None);
     let address: Address = deployer.address().into();
     _instance
         .mint(governor_mod::Identity::Address(address), 100)
@@ -130,7 +130,7 @@ async fn create_proposal() {
     assert_eq!(state, governor_mod::ProposalState::Executed());
 }
 
-async fn height(w: Wallet) -> u64 {
+async fn height(w: WalletUnlocked) -> u64 {
     w.get_provider()
         .unwrap()
         .latest_block_height()

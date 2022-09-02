@@ -3,7 +3,7 @@ use fuels::{prelude::*, tx::ContractId};
 // Load abi from json
 abigen!(
     MerkleProofTestContract,
-    "test_projects/test_merkle_proof/out/debug/test_merkle_proof-abi.json"
+    "test_projects/test_merkle_proof/out/debug/test_merkle_proof-flat-abi.json"
 );
 
 async fn get_contract_instance() -> (MerkleProofTestContract, ContractId) {
@@ -27,8 +27,8 @@ async fn get_contract_instance() -> (MerkleProofTestContract, ContractId) {
 #[tokio::test]
 async fn verify_correct_merkle_proof() {
     let (_instance, _id) = get_contract_instance().await;
-    // let addr1 = LocalWallet::new_random(None).address();
-    // let addr2 = LocalWallet::new_random(None).address();
+    // let addr1 = WalletUnlocked::new_random(None).address();
+    // let addr2 = WalletUnlocked::new_random(None).address();
     // let address1 = [
     //     118, 64, 238, 245, 229, 5, 191, 187, 201, 174, 141, 75, 72, 119, 88, 252, 38, 62, 110, 176,
     //     51, 16, 126, 190, 233, 136, 54, 127, 90, 101, 230, 168,

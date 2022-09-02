@@ -1,19 +1,18 @@
 use fuels::{
     prelude::*,
-    signers::wallet::Wallet,
     tx::{AssetId, ContractId},
 };
 
 abigen!(
     VaultTest,
-    "test_projects/test_vault/out/debug/test_vault-abi.json"
+    "test_projects/test_vault/out/debug/test_vault-flat-abi.json"
 );
 abigen!(
     BasicToken,
-    "test_projects/basic_token/out/debug/basic_token-abi.json"
+    "test_projects/basic_token/out/debug/basic_token-flat-abi.json"
 );
 
-async fn get_vault_instance(wallet: Wallet) -> (VaultTest, ContractId) {
+async fn get_vault_instance(wallet: WalletUnlocked) -> (VaultTest, ContractId) {
     let id = Contract::deploy(
         "test_projects/test_vault/out/debug/test_vault.bin",
         &wallet,
@@ -28,7 +27,7 @@ async fn get_vault_instance(wallet: Wallet) -> (VaultTest, ContractId) {
     (instance, id.into())
 }
 
-async fn get_basic_token_instance() -> (BasicToken, ContractId, Wallet) {
+async fn get_basic_token_instance() -> (BasicToken, ContractId, WalletUnlocked) {
     // Launch a local network and deploy the contract
     let wallet = launch_provider_and_get_wallet().await;
     let wallet_clone = wallet.clone();
@@ -139,7 +138,11 @@ async fn test_vault_e2e() {
     assert_eq!(assets_locked, 2_000_000);
     let _withdraw_tx = vault_instance
         ._withdraw(vaulttest_mod::Identity::Address(wallet.address().into()))
-        .call_params(CallParameters::new(Some(500_000), Some(shares_asset_id), None))
+        .call_params(CallParameters::new(
+            Some(500_000),
+            Some(shares_asset_id),
+            None,
+        ))
         .append_variable_outputs(1)
         .call()
         .await

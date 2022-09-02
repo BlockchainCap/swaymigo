@@ -1,14 +1,14 @@
 use fuels::tx::Address;
-use fuels::{prelude::*, signers::wallet::Wallet, tx::ContractId};
+use fuels::{prelude::*, tx::ContractId};
 use std::str::FromStr;
 
 // Load abi from json
 abigen!(
     TestNFT,
-    "test_projects/test_non_fungible_token/out/debug/test_non_fungible_token-abi.json"
+    "test_projects/test_non_fungible_token/out/debug/test_non_fungible_token-flat-abi.json"
 );
 
-async fn get_contract_instance() -> (TestNFT, ContractId, Wallet) {
+async fn get_contract_instance() -> (TestNFT, ContractId, WalletUnlocked) {
     // Launch a local network and deploy the contract
     let wallet = launch_provider_and_get_wallet().await;
 
@@ -29,7 +29,7 @@ async fn get_contract_instance() -> (TestNFT, ContractId, Wallet) {
 #[tokio::test]
 async fn can_mint() {
     let (_instance, _id, _) = get_contract_instance().await;
-    let address = LocalWallet::new_random(None).address().into();
+    let address = WalletUnlocked::new_random(None).address().into();
     let mint_res = _instance
         ._mint(testnft_mod::Identity::Address(address), 1)
         .call()
@@ -53,7 +53,7 @@ async fn can_mint() {
 #[tokio::test]
 async fn can_burn() {
     let (_instance, _id, _) = get_contract_instance().await;
-    let address = LocalWallet::new_random(None).address().into();
+    let address = WalletUnlocked::new_random(None).address().into();
     let mint_res = _instance
         ._mint(testnft_mod::Identity::Address(address), 12)
         .call()
@@ -88,7 +88,7 @@ async fn can_burn() {
 #[tokio::test]
 async fn can_transfer() {
     let (_instance, _id, wallet) = get_contract_instance().await;
-    let address2 = LocalWallet::new_random(None).address().into();
+    let address2 = WalletUnlocked::new_random(None).address().into();
     let mint_res = _instance
         ._mint(testnft_mod::Identity::Address(wallet.address().into()), 12)
         .call()
