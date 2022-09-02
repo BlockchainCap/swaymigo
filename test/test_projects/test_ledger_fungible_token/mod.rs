@@ -3,7 +3,7 @@ use fuels::{prelude::*, tx::ContractId};
 // Load abi from json
 abigen!(
     TestToken,
-    "test_projects/test_ledger_fungible_token/out/debug/test_ledger_fungible_token-abi.json"
+    "test_projects/test_ledger_fungible_token/out/debug/test_ledger_fungible_token-flat-abi.json"
 );
 
 async fn get_contract_instance() -> (TestToken, ContractId) {
@@ -27,7 +27,7 @@ async fn get_contract_instance() -> (TestToken, ContractId) {
 #[tokio::test]
 async fn test_mint_tokens() {
     let (_instance, _id) = get_contract_instance().await;
-    let receiver = LocalWallet::new_random(None).address().into();
+    let receiver = WalletUnlocked::new_random(None).address().into();
 
     let mint_res = _instance.mint(receiver, 100).call().await;
     assert!(!mint_res.is_err());
@@ -40,7 +40,7 @@ async fn test_mint_tokens() {
 #[tokio::test]
 async fn test_burn_tokens() {
     let (_instance, _id) = get_contract_instance().await;
-    let receiver = LocalWallet::new_random(None).address().into();
+    let receiver = WalletUnlocked::new_random(None).address().into();
     let mint_res = _instance.mint(receiver, 100).call().await;
     assert!(!mint_res.is_err());
     // now burn
@@ -55,8 +55,8 @@ async fn test_burn_tokens() {
 #[tokio::test]
 async fn test_transfer_tokens() {
     let (_instance, _id) = get_contract_instance().await;
-    let from = LocalWallet::new_random(None).address().into();
-    let to = LocalWallet::new_random(None).address().into();
+    let from = WalletUnlocked::new_random(None).address().into();
+    let to = WalletUnlocked::new_random(None).address().into();
     let mint_res = _instance.mint(from, 100).call().await;
 
     assert!(!mint_res.is_err());
