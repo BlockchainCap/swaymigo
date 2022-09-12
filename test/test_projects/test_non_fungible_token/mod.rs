@@ -5,7 +5,7 @@ use std::str::FromStr;
 // Load abi from json
 abigen!(
     TestNFT,
-    "test_projects/test_non_fungible_token/out/debug/test_non_fungible_token-flat-abi.json"
+    "test_projects/test_non_fungible_token/out/debug/test_non_fungible_token-abi.json"
 );
 
 async fn get_contract_instance() -> (TestNFT, ContractId, WalletUnlocked) {

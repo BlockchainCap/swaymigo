@@ -3,7 +3,7 @@ use fuels::{prelude::*, tx::ContractId};
 // Load abi from json
 abigen!(
     VoteToken,
-    "test_projects/test_vote_token/out/debug/test_vote_token-flat-abi.json"
+    "test_projects/test_vote_token/out/debug/test_vote_token-abi.json"
 );
 
 async fn get_contract_instance() -> (VoteToken, ContractId) {

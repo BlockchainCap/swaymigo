@@ -2,7 +2,7 @@ use fuels::{prelude::*, tx::ContractId};
 
 abigen!(
     WrappedToken,
-    "test_projects/test_wrapped_asset/out/debug/test_wrapped_asset-flat-abi.json"
+    "test_projects/test_wrapped_asset/out/debug/test_wrapped_asset-abi.json"
 );
 
 async fn get_contract_instance() -> (WrappedToken, ContractId) {

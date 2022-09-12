@@ -3,7 +3,7 @@ use fuels::{prelude::*, tx::ContractId};
 // Load abi from json
 abigen!(
     TestToken,
-    "test_projects/test_ledger_fungible_token/out/debug/test_ledger_fungible_token-flat-abi.json"
+    "test_projects/test_ledger_fungible_token/out/debug/test_ledger_fungible_token-abi.json"
 );
 
 async fn get_contract_instance() -> (TestToken, ContractId) {
