@@ -3,7 +3,7 @@ use fuels::{prelude::*, tx::ContractId};
 // Load abi from json
 abigen!(
     MerkleProofTestContract,
-    "test_projects/test_merkle_proof/out/debug/test_merkle_proof-flat-abi.json"
+    "test_projects/test_merkle_proof/out/debug/test_merkle_proof-abi.json"
 );
 
 async fn get_contract_instance() -> (MerkleProofTestContract, ContractId) {

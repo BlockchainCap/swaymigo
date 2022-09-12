@@ -1,7 +1,7 @@
 use fuels::{prelude::*};
 
 // Load abi from json
-abigen!(Governor, "out/debug/governor-flat-abi.json");
+abigen!(Governor, "out/debug/governor-abi.json");
 
 async fn get_contract_instance() -> (Governor, ContractId, WalletUnlocked) {
     // Launch a local network and deploy the contract

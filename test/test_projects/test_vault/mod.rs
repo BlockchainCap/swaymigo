@@ -5,11 +5,11 @@ use fuels::{
 
 abigen!(
     VaultTest,
-    "test_projects/test_vault/out/debug/test_vault-flat-abi.json"
+    "test_projects/test_vault/out/debug/test_vault-abi.json"
 );
 abigen!(
     BasicToken,
-    "test_projects/basic_token/out/debug/basic_token-flat-abi.json"
+    "test_projects/basic_token/out/debug/basic_token-abi.json"
 );
 
 async fn get_vault_instance(wallet: WalletUnlocked) -> (VaultTest, ContractId) {
