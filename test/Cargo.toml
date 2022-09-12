@@ -6,7 +6,7 @@ edition = "2021"
 publish = false
 
 [dependencies]
-fuels = { version = "0.22", features = ["fuel-core-lib"] }
+fuels = { version = "0.23", features = ["fuel-core-lib"] }
 tokio = { version = "1.12", features = ["rt", "macros"] }
 sha2 = "0.10"
 
