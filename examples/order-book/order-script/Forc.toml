@@ -1,0 +1,8 @@
+[project]
+authors = ["Ryan Sproule"]
+entry = "order-script.sw"
+license = "Apache-2.0"
+name = "order-script"
+
+[dependencies]
+order = { path = "../order" }

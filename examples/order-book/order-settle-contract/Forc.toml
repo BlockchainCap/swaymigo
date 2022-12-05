@@ -1,0 +1,8 @@
+[project]
+authors = ["Ryan Sproule"]
+entry = "main.sw"
+license = "Apache-2.0"
+name = "order-settle-contract"
+
+[dependencies]
+order = {path = "../order"}
