@@ -2,7 +2,7 @@ library wrapped_asset;
 
 use ::token::ledger_fungible_token::*;
 use ::auth::sender::*;
-use std::{identity::Identity, assert::assert, chain::auth::*, context::*, context::call_frames::*, token::*};
+use std::{identity::Identity, assert::assert, auth::*, context::*, call_frames::*, token::*};
 
 // need to set this per deployment
 // alternative design option: have a single contract control ALL native 

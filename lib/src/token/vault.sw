@@ -1,9 +1,9 @@
 library vault;
 use std::{
     assert::*,
-    chain::auth::*,
+    auth::*,
     context::*,
-    context::call_frames::*,
+    call_frames::*,
     contract_id::ContractId,
     hash::*,
     identity::*,

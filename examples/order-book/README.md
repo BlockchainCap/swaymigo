@@ -3,14 +3,6 @@
 Demo of using predicates to orchestrate a swap without any smart contracts.
 The counter-party discovery / order matching is out of scope.
 
-## TODO
-
-- [ ] figure out how to dynamically construct a predicate,
-- [ ] frontend integration
-- [ ] index the orders for market makers, UIs and takers
-
-----
-
 ## What are predicates?
 
 A predicate is a mechanism that allows someone to take ownership over an account by the nature of the
@@ -78,3 +70,9 @@ sequenceDiagram
     Note right of Bob: Balance A: 10 <br/> Balance B: 0
 
 ```
+
+## TODO
+
+- [ ] figure out how to dynamically construct a predicate,
+- [ ] frontend integration
+- [ ] index the orders for market makers, UIs and takers

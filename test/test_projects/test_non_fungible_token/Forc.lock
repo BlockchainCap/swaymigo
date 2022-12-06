@@ -1,11 +1,10 @@
 [[package]]
 name = 'core'
-source = 'path+from-root-3B0F13309DB8CFBA'
-dependencies = []
+source = 'path+from-root-A5A9AFB187495FC2'
 
 [[package]]
 name = 'std'
-source = 'git+https://github.com/fuellabs/sway?tag=v0.24.3#95cd150cacef407a1f30c89899c539b0d57f099d'
+source = 'git+https://github.com/fuellabs/sway?tag=v0.31.3#12ad8423811d566972dd75fbb954cdb95afde8d8'
 dependencies = ['core']
 
 [[package]]
@@ -15,7 +14,7 @@ dependencies = ['std']
 
 [[package]]
 name = 'test_non_fungible_token'
-source = 'root'
+source = 'member'
 dependencies = [
     'std',
     'swaymigo',

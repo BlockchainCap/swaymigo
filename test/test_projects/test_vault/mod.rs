@@ -22,9 +22,8 @@ async fn get_vault_instance(wallet: WalletUnlocked) -> (VaultTest, ContractId) {
     .await
     .unwrap();
 
-    let instance = VaultTestBuilder::new(id.to_string(), wallet).build();
-
-    (instance, id.into())
+    let instance = VaultTest::new(id.clone(), wallet);
+    (instance, ContractId::from(id))
 }
 
 async fn get_basic_token_instance() -> (BasicToken, ContractId, WalletUnlocked) {
@@ -40,24 +39,31 @@ async fn get_basic_token_instance() -> (BasicToken, ContractId, WalletUnlocked) 
     .await
     .unwrap();
 
-    let instance = BasicTokenBuilder::new(id.to_string(), wallet).build();
-
-    (instance, id.into(), wallet_clone)
+    let instance: BasicToken = BasicToken::new(id.clone(), wallet);
+    (instance, ContractId::from(id), wallet_clone)
 }
 
 #[tokio::test]
 async fn test_vault_e2e() {
     let (_token_instance, token_contract, wallet) = get_basic_token_instance().await;
     let asset_id = AssetId::from(*token_contract.clone());
-    let (vault_instance, vault_contract_id) = get_vault_instance(wallet.clone()).await;
+    let (vault_instance, vault_contract_id): (VaultTest, ContractId) =
+        get_vault_instance(wallet.clone()).await;
     let shares_asset_id = AssetId::from(*vault_contract_id.clone());
     vault_instance
-        .set_asset_id(asset_id.into())
+        .methods()
+        .set_asset_id(Bits256::from_hex_str(asset_id.to_string().as_str()).unwrap())
         .call()
         .await
         .unwrap();
-    let _mint_tx = _token_instance.mint(10_000_000).call().await.unwrap();
+    let _mint_tx = _token_instance
+        .methods()
+        .mint(10_000_000)
+        .call()
+        .await
+        .unwrap();
     let _transfer_tx = _token_instance
+        .methods()
         .force_transfer(5_000_000, token_contract.into(), wallet.address().into())
         .append_variable_outputs(1)
         .call()
@@ -66,7 +72,8 @@ async fn test_vault_e2e() {
     let balance = wallet.get_asset_balance(&asset_id).await.unwrap();
     assert_eq!(5_000_000, balance);
     vault_instance
-        ._deposit(vaulttest_mod::Identity::Address(wallet.address().into()))
+        .methods()
+        ._deposit(Identity::Address(wallet.address().into()))
         .call_params(CallParameters::new(Some(2_000_000), Some(asset_id), None))
         .append_variable_outputs(1)
         .call()
@@ -79,6 +86,7 @@ async fn test_vault_e2e() {
     assert_eq!(asset_balance, 3_000_000);
     // this is simulating if the vault gained more underlying asset without anyone depositing into the pool
     vault_instance
+        .methods()
         .simulate_vault_earning()
         .call_params(CallParameters::new(Some(1_000_000), Some(asset_id), None))
         .call()
@@ -91,6 +99,7 @@ async fn test_vault_e2e() {
     // TODO: having difficulty checking the asset balances of a contract via fuels-rs.
     // Enshrining this on the contact feels like a hack.
     let assets_locked = vault_instance
+        .methods()
         ._get_assets_locked()
         .simulate()
         .await
@@ -98,7 +107,8 @@ async fn test_vault_e2e() {
         .value;
     assert_eq!(assets_locked, 3_000_000);
     vault_instance
-        ._withdraw(vaulttest_mod::Identity::Address(wallet.address().into()))
+        .methods()
+        ._withdraw(Identity::Address(wallet.address().into()))
         .call_params(CallParameters::new(
             Some(500_000),
             Some(shares_asset_id),
@@ -115,6 +125,7 @@ async fn test_vault_e2e() {
     // TODO: having difficulty checking the asset balances of a contract via fuels-rs.
     // Enshrining this on the contact feels like a hack.
     let assets_locked = vault_instance
+        .methods()
         ._get_assets_locked()
         .simulate()
         .await
@@ -123,6 +134,7 @@ async fn test_vault_e2e() {
     assert_eq!(assets_locked, 2_500_000);
     // sim just burns tokens to the other contract
     let _sim_loss = vault_instance
+        .methods()
         .simulate_vault_losing(500_000, token_contract)
         .set_contracts(&[token_contract.into()])
         .append_variable_outputs(1)
@@ -130,6 +142,7 @@ async fn test_vault_e2e() {
         .await
         .unwrap();
     let assets_locked = vault_instance
+        .methods()
         ._get_assets_locked()
         .simulate()
         .await
@@ -137,7 +150,8 @@ async fn test_vault_e2e() {
         .value;
     assert_eq!(assets_locked, 2_000_000);
     let _withdraw_tx = vault_instance
-        ._withdraw(vaulttest_mod::Identity::Address(wallet.address().into()))
+        .methods()
+        ._withdraw(Identity::Address(wallet.address().into()))
         .call_params(CallParameters::new(
             Some(500_000),
             Some(shares_asset_id),
@@ -152,6 +166,7 @@ async fn test_vault_e2e() {
     assert_eq!(shares_balance, 1000000);
     assert_eq!(asset_balance, 3000000);
     let assets_locked = vault_instance
+        .methods()
         ._get_assets_locked()
         .simulate()
         .await
