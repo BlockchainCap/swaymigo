@@ -1,11 +1,12 @@
 name: 'Setup Rust env'
+description: "set up the rust and forc environments"
 inputs:
   rust-version:
     description: 'Rust version'
     default: 1.65.0
   forc-version:
     description: 'Forc version'
-    default: 0.31.3
+    default: 0.31.0
 runs:
   using: "composite"
   steps:
