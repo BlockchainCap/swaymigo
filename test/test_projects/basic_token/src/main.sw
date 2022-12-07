@@ -1,6 +1,15 @@
 contract;
 
-use std::{address::Address, contract_id::ContractId, token::{burn, mint, transfer_to_output}};
+use std::{
+    address::Address,
+    contract_id::ContractId,
+    identity::Identity,
+    token::{
+        burn,
+        mint,
+        transfer,
+    },
+};
 
 abi BasicToken {
     fn mint(mint_amount: u64);
@@ -17,6 +26,6 @@ impl BasicToken for Contract {
     }
 
     fn force_transfer(coins: u64, asset_id: ContractId, receiver: Address) {
-        transfer_to_output(coins, asset_id, receiver)
+        transfer(coins, asset_id, Identity::Address(receiver))
     }
 }

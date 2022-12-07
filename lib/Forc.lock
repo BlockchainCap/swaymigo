@@ -1,14 +1,13 @@
 [[package]]
 name = 'core'
-source = 'path+from-root-FD2B3C127A83CF65'
-dependencies = []
+source = 'path+from-root-A5A9AFB187495FC2'
 
 [[package]]
 name = 'std'
-source = 'git+https://github.com/fuellabs/sway?tag=v0.22.1#c486eabc3ed4d8c53b63735188f2c1db5d17703c'
+source = 'git+https://github.com/fuellabs/sway?tag=v0.31.3#12ad8423811d566972dd75fbb954cdb95afde8d8'
 dependencies = ['core']
 
 [[package]]
 name = 'swaymigo'
-source = 'root'
+source = 'member'
 dependencies = ['std']

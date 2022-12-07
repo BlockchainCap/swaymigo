@@ -19,9 +19,9 @@ async fn get_contract_instance() -> (MerkleProofTestContract, ContractId) {
     .await
     .unwrap();
 
-    let instance = MerkleProofTestContractBuilder::new(id.to_string(), wallet).build();
+    let instance = MerkleProofTestContract::new(id.clone(), wallet);
 
-    (instance, id.into())
+    (instance, ContractId::from(id))
 }
 
 #[tokio::test]

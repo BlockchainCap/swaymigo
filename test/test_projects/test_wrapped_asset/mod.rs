@@ -18,16 +18,16 @@ async fn get_contract_instance() -> (WrappedToken, ContractId) {
     .await
     .unwrap();
 
-    let instance = WrappedTokenBuilder::new(id.to_string(), wallet).build();
+    let instance = WrappedToken::new(id.clone(), wallet);
 
-    (instance, id.into())
+    (instance, ContractId::from(id))
 }
 
 #[tokio::test]
 async fn test_wrap_no_coins_sent_should_fail() {
     let (_instance, _id) = get_contract_instance().await;
 
-    let wrap = _instance.wrap_asset().call().await;
+    let wrap = _instance.methods().wrap_asset().call().await;
     assert!(wrap.is_err());
 }
 

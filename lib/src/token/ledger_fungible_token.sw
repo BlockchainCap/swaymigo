@@ -1,5 +1,5 @@
 library ledger_fungible_token;
-use std::{hash::*, identity::Identity, logging::*, revert::*, storage::*};
+use std::{hash::*, identity::Identity, logging::*, revert::*, storage::*, auth::*};
 
 // storage not currently supported in libraries, do it manually
 const SUPPLY_BALANCE: b256 = 0x00000000000000000000000000000000000000000000000000000000aaaaaba1;

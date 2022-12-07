@@ -5,7 +5,7 @@ use std::{
     identity::Identity,
     assert::*,
     block::*,
-    chain::auth::msg_sender,
+    auth::msg_sender,
     context::balance_of,
     contract_id::ContractId,
     hash::sha256,

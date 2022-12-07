@@ -19,9 +19,9 @@ async fn get_contract_instance() -> (VoteToken, ContractId) {
     .await
     .unwrap();
 
-    let instance = VoteTokenBuilder::new(id.to_string(), wallet).build();
+    let instance = VoteToken::new(id.clone(), wallet);
 
-    (instance, id.into())
+    (instance, ContractId::from(id))
 }
 
 #[tokio::test]
@@ -30,13 +30,20 @@ async fn test_snapshots_full() {
     let receiver = WalletUnlocked::new_random(None).address().into();
     let garb = WalletUnlocked::new_random(None).address().into();
 
-    let mint_tx = _instance._mint(receiver, 100).call().await;
-    let post_mint_block = _instance.blocknumber().call().await.unwrap().value;
-    let _mint_g = _instance._mint(garb, 100).call().await;
+    let mint_tx = _instance.methods()._mint(receiver, 100).call().await;
+    let post_mint_block = _instance
+        .methods()
+        .blocknumber()
+        .call()
+        .await
+        .unwrap()
+        .value;
+    let _mint_g = _instance.methods()._mint(garb, 100).call().await;
     assert!(!mint_tx.is_err());
-    let mint2 = _instance._mint(receiver, 100).call().await;
+    let mint2 = _instance.methods()._mint(receiver, 100).call().await;
     assert!(!mint2.is_err());
     let supply_snapshot = _instance
+        .methods()
         ._get_supply_checkpoint(post_mint_block)
         .call()
         .await
@@ -44,6 +51,7 @@ async fn test_snapshots_full() {
         .value;
     assert_eq!(supply_snapshot, 100);
     let supply_snapshot_2 = _instance
+        .methods()
         ._get_supply_checkpoint(post_mint_block + 1)
         .call()
         .await
@@ -52,6 +60,7 @@ async fn test_snapshots_full() {
     assert_eq!(supply_snapshot_2, 200);
 
     let balance_snapshot = _instance
+        .methods()
         ._get_voting_power(post_mint_block, receiver)
         .call()
         .await
@@ -59,6 +68,7 @@ async fn test_snapshots_full() {
         .value;
     assert_eq!(balance_snapshot, 100);
     let balance_snapshot_2 = _instance
+        .methods()
         ._get_voting_power(post_mint_block + 1, receiver)
         .call()
         .await
@@ -66,6 +76,7 @@ async fn test_snapshots_full() {
         .value;
     assert_eq!(balance_snapshot_2, 100);
     let balance_snapshot_other_b4 = _instance
+        .methods()
         ._get_voting_power(post_mint_block, garb)
         .call()
         .await
@@ -73,6 +84,7 @@ async fn test_snapshots_full() {
         .value;
     assert_eq!(balance_snapshot_other_b4, 0);
     let balance_snapshot_other = _instance
+        .methods()
         ._get_voting_power(post_mint_block + 1, garb)
         .call()
         .await
@@ -85,8 +97,13 @@ async fn test_snapshots_full() {
 async fn should_fail_block_not_mined() {
     let (_instance, _id) = get_contract_instance().await;
     let receiver = WalletUnlocked::new_random(None).address().into();
-    let attempt_get_future_block = _instance._get_voting_power(100, receiver).call().await;
+    let attempt_get_future_block = _instance
+        .methods()
+        ._get_voting_power(100, receiver)
+        .call()
+        .await;
     assert!(attempt_get_future_block.is_err());
-    let attempt_get_future_block_supply = _instance._get_supply_checkpoint(100).call().await;
+    let attempt_get_future_block_supply =
+        _instance.methods()._get_supply_checkpoint(100).call().await;
     assert!(attempt_get_future_block_supply.is_err());
 }

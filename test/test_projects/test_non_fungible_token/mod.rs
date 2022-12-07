@@ -21,9 +21,9 @@ async fn get_contract_instance() -> (TestNFT, ContractId, WalletUnlocked) {
     .await
     .unwrap();
 
-    let instance = TestNFTBuilder::new(id.to_string(), wallet.clone()).build();
+    let instance = TestNFT::new(id.clone(), wallet.clone());
 
-    (instance, id.into(), wallet)
+    (instance, ContractId::from(id), wallet)
 }
 
 #[tokio::test]
@@ -31,22 +31,24 @@ async fn can_mint() {
     let (_instance, _id, _) = get_contract_instance().await;
     let address = WalletUnlocked::new_random(None).address().into();
     let mint_res = _instance
-        ._mint(testnft_mod::Identity::Address(address), 1)
+        .methods()
+        ._mint(Identity::Address(address), 1)
         .call()
         .await;
     assert!(!mint_res.is_err());
 
-    let supply = _instance._supply().call().await.unwrap().value;
+    let supply = _instance.methods()._supply().call().await.unwrap().value;
     assert_eq!(supply, 1);
     let balance = _instance
-        ._balance_of(testnft_mod::Identity::Address(address))
+        .methods()
+        ._balance_of(Identity::Address(address))
         .call()
         .await
         .unwrap()
         .value;
     assert_eq!(balance, 1);
-    let owner = _instance._owner_of(1).call().await.unwrap().value;
-    let address_identity = testnft_mod::Identity::Address(address);
+    let owner = _instance.methods()._owner_of(1).call().await.unwrap().value;
+    let address_identity = Identity::Address(address);
     assert_eq!(owner, address_identity);
 }
 
@@ -55,30 +57,39 @@ async fn can_burn() {
     let (_instance, _id, _) = get_contract_instance().await;
     let address = WalletUnlocked::new_random(None).address().into();
     let mint_res = _instance
-        ._mint(testnft_mod::Identity::Address(address), 12)
+        .methods()
+        ._mint(Identity::Address(address), 12)
         .call()
         .await;
     assert!(!mint_res.is_err());
 
     let burn_res = _instance
-        ._burn(testnft_mod::Identity::Address(address), 12)
+        .methods()
+        ._burn(Identity::Address(address), 12)
         .call()
         .await;
     assert!(!burn_res.is_err());
 
-    let supply = _instance._supply().call().await.unwrap().value;
+    let supply = _instance.methods()._supply().call().await.unwrap().value;
     assert_eq!(supply, 0);
     let balance = _instance
-        ._balance_of(testnft_mod::Identity::Address(address))
+        .methods()
+        ._balance_of(Identity::Address(address))
         .call()
         .await
         .unwrap()
         .value;
     assert_eq!(balance, 0);
-    let owner = _instance._owner_of(12).call().await.unwrap().value;
+    let owner = _instance
+        .methods()
+        ._owner_of(12)
+        .call()
+        .await
+        .unwrap()
+        .value;
     assert_eq!(
         owner,
-        testnft_mod::Identity::Address(
+        Identity::Address(
             Address::from_str("0x0000000000000000000000000000000000000000000000000000000000000000")
                 .unwrap()
         )
@@ -90,37 +101,47 @@ async fn can_transfer() {
     let (_instance, _id, wallet) = get_contract_instance().await;
     let address2 = WalletUnlocked::new_random(None).address().into();
     let mint_res = _instance
-        ._mint(testnft_mod::Identity::Address(wallet.address().into()), 12)
+        .methods()
+        ._mint(Identity::Address(wallet.address().into()), 12)
         .call()
         .await;
     assert!(!mint_res.is_err());
 
     let transfer = _instance
+        .methods()
         ._transfer(
-            testnft_mod::Identity::Address(wallet.address().into()),
-            testnft_mod::Identity::Address(address2),
+            Identity::Address(wallet.address().into()),
+            Identity::Address(address2),
             12,
         )
         .call()
         .await;
     assert!(!transfer.is_err());
 
-    let supply = _instance._supply().call().await.unwrap().value;
+    let supply = _instance.methods()._supply().call().await.unwrap().value;
     assert_eq!(supply, 1);
     let balance = _instance
-        ._balance_of(testnft_mod::Identity::Address(wallet.address().into()))
+        .methods()
+        ._balance_of(Identity::Address(wallet.address().into()))
         .call()
         .await
         .unwrap()
         .value;
     assert_eq!(balance, 0);
     let balance2 = _instance
-        ._balance_of(testnft_mod::Identity::Address(address2))
+        .methods()
+        ._balance_of(Identity::Address(address2))
         .call()
         .await
         .unwrap()
         .value;
     assert_eq!(balance2, 1);
-    let owner = _instance._owner_of(12).call().await.unwrap().value;
-    assert_eq!(owner, testnft_mod::Identity::Address(address2));
+    let owner = _instance
+        .methods()
+        ._owner_of(12)
+        .call()
+        .await
+        .unwrap()
+        .value;
+    assert_eq!(owner, Identity::Address(address2));
 }
