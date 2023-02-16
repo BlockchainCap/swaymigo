@@ -7,7 +7,7 @@ publish = false
 
 [dependencies]
 fuels = { version = "0.31", features = ["fuel-core-lib"] }
-tokio = { version = "1.23", features = ["rt", "macros"] }
+tokio = { version = "1.24", features = ["rt", "macros"] }
 sha2 = "0.10"
 
 [[test]]
